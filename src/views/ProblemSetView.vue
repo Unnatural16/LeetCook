@@ -30,26 +30,76 @@
         <Button><Icon type="md-create" />随机开始</Button>
       </div>
       <div class="hr" />
-      <TheProblemTable/>
+      <TheProblemTable />
     </article>
     <aside>
-      <div class="advertisement">广告</div>
-      <div class="advertisement">广告</div>
-      <div>打卡日历</div>
-      <div>当前进度</div>
-      <div>热门推荐</div>
-      <div>标签分类</div>
-      <div>企业题库</div>
+      <img
+        src="https://pic.leetcode-cn.com/1604653052-XVsDjW-侧边栏广告位 @2x.png"
+        class="advertisement"
+        alt="广告"
+      />
+      <img
+        src="https://pic.leetcode-cn.com/1604902939-qAiwGp-04 侧边栏广告位-京东.png"
+        class="advertisement"
+        alt="广告"
+      />
+      <TheCalendar />
+      <TheProgress />
+      <List>
+        <template slot="header">
+          <Icon type="md-bonfire" size="36" />
+          <h2 :style="{ display: 'inline-block' }">热门推荐</h2>
+        </template>
+        <ListItem :style="{ 'padding-left': '20px' }">
+          🔥 LeetCode 热题 HOT 100
+        </ListItem>
+        <ListItem :style="{ 'padding-left': '20px' }">
+          💙 LeetCode 精选数据库 70 题
+        </ListItem>
+        <ListItem :style="{ 'padding-left': '20px' }">
+          🧡 LeetCode 精选算法 200 题
+        </ListItem>
+        <ListItem :style="{ 'padding-left': '20px' }">
+          🏆 力扣杯 - 竞赛合集
+        </ListItem>
+        <ListItem :style="{ 'padding-left': '20px' }">
+          🐧 腾讯精选练习 50 题
+        </ListItem>
+        <ListItem :style="{ 'padding-left': '20px' }">
+          👨‍💻 LeetCode 精选 TOP面试题
+        </ListItem>
+        <template slot="footer">
+          <p :style="{ fontSize: '20px' }">
+            <Icon type="md-heart" size="24" />贡献题目
+          </p>
+        </template>
+      </List>
+      <div>
+        <Icon type="md-bookmark" size="36"/>
+        <h2 :style="{ display: 'inline-block' }">热门推荐</h2><br>
+        <Tag
+          size="medium"
+          class="problem-tag"
+          v-for="[key, number] in Object.entries(tag_number)"
+          :key="key.toString()"
+          >{{ key }}<span class="inner-tag">{{ number }}</span></Tag
+        >
+      </div>
     </aside>
   </main>
 </template>
 
 <script>
-import TheProblemTable from '../components/ThePrblemTable'
+import TheProblemTable from "../components/ThePrblemTable";
+import TheCalendar from "../components/TheCalendar";
+import TheProgress from "../components/TheProgress";
+
 export default {
   name: "ProblemSetView",
-  components:{
-    TheProblemTable
+  components: {
+    TheProblemTable,
+    TheCalendar,
+    TheProgress,
   },
   data: function () {
     return {
@@ -69,7 +119,11 @@ export default {
         "lcci",
         "lcof",
       ],
+      tag_number: {},
     };
+  },
+  created: async function () {
+    this.tag_number = await this.GetProblemsTagNumber();
   },
 };
 </script>
@@ -83,6 +137,7 @@ main {
   }
   aside {
     width: 30%;
+    padding: 50px;
   }
 }
 .title {
@@ -170,10 +225,29 @@ main {
     float: right;
   }
 }
+
 .advertisement {
-  background: bisque;
-  height: 150px;
+  width: 100%;
   border-radius: 5px;
-  margin: 10px;
+  transition: transform 0.5s;
+  &:hover {
+    transform: translateY(-10px);
+  }
+}
+aside > div {
+  //侧边栏通用样式
+  margin: 10px 0;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px, rgba(0, 0, 0, 0.08) 0px 2px 8px;
+}
+.problem-tag {
+  border-radius: 20px;
+  .inner-tag {
+    padding: 1px 3px;
+    background: #17807d;
+    color: white;
+    border-radius: 10px;
+  }
 }
 </style>

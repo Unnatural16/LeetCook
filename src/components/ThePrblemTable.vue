@@ -41,13 +41,13 @@
         标签
         <Icon type="ios-arrow-down" />
         <DropdownMenu slot="list" class="tag-list">
-          <DropdownItem v-for="item in problem_tag_list" :key="item">{{
+          <DropdownItem v-for="item in problems_tag_list" :key="item">{{
             item
           }}</DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </div>
-    <Table stripe :columns="columns1" :data="data1"></Table>
+    <Table stripe :columns="problems_table_header" :data="problems_table_data"></Table>
   </div>
 </template>
 
@@ -57,51 +57,15 @@ export default {
   data: function () {
     return {
       search_content: "",
-      problem_tag_list: [],
-      columns1: [
-        {
-          title: "Name",
-          key: "name",
-        },
-        {
-          title: "Age",
-          key: "age",
-        },
-        {
-          title: "Address",
-          key: "address",
-        },
-      ],
-      data1: [
-        {
-          name: "John Brown",
-          age: 18,
-          address: "New York No. 1 Lake Park",
-          date: "2016-10-03",
-        },
-        {
-          name: "Jim Green",
-          age: 24,
-          address: "London No. 1 Lake Park",
-          date: "2016-10-01",
-        },
-        {
-          name: "Joe Black",
-          age: 30,
-          address: "Sydney No. 1 Lake Park",
-          date: "2016-10-02",
-        },
-        {
-          name: "Jon Snow",
-          age: 26,
-          address: "Ottawa No. 2 Lake Park",
-          date: "2016-10-04",
-        },
-      ],
+      problems_tag_list: [],
+      problems_table_header:[],
+      problems_table_data:[]
     };
   },
-  created: function () {
-    this.problem_tag_list = this.GetProblemTag();
+  created: async function () {
+    this.problems_tag_list=await this.GetProblemsTag()
+    this.problems_table_header=await this.GetProblemsTableHeader()
+    this.problems_table_data=await this.GetProblemsTableData()
   },
 };
 </script>

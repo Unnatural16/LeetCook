@@ -34,11 +34,11 @@ body {
   justify-content: space-between;
   .main-router {
     flex: 1;
-    min-width: 1440px;
+    max-width: 1440px;
     align-self: center;
   }
   .main-footer {
-    min-width: 1440px;
+    max-width: 1440px;
     align-self: center;
   }
 }
