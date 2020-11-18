@@ -3,19 +3,19 @@
     <article>
       <h2 class="title">
         <Icon type="ios-apps" />力厨 (LeetCook) -
-        {{ problem_menu[problem_type.indexOf($route.params.type)] || "全部" }}
+        {{ problemMenu[problemType.indexOf($route.params.type)] || "全部" }}
       </h2>
       <div class="problem-menu">
         <router-link
-          v-for="(item, index) in problem_menu"
+          v-for="(item, index) in problemMenu"
           :key="item"
           :to="{
             params: {
               //若与当前路由相同（再次点击）则返回all
               type:
-                problem_type[index] == $route.params.type
+                problemType[index] == $route.params.type
                   ? 'all'
-                  : problem_type[index],
+                  : problemType[index],
             },
           }"
           >{{ item }}</router-link
@@ -34,13 +34,13 @@
     </article>
     <aside>
       <img
-        src="https://pic.leetcode-cn.com/1604653052-XVsDjW-侧边栏广告位 @2x.png"
-        class="advertisement"
+        src="https://i.loli.net/2020/11/16/jTJnx6VwdbySA3H.jpg"
+        class="advertisement-img"
         alt="广告"
       />
       <img
-        src="https://pic.leetcode-cn.com/1604902939-qAiwGp-04 侧边栏广告位-京东.png"
-        class="advertisement"
+        src="https://i.loli.net/2020/11/16/K3DJVGakL25gwQW.png"
+        class="advertisement-img"
         alt="广告"
       />
       <TheCalendar />
@@ -80,7 +80,7 @@
         <Tag
           size="medium"
           class="problem-tag"
-          v-for="[key, number] in Object.entries(tag_number)"
+          v-for="[key, number] in Object.entries(tagNumber)"
           :key="key.toString()"
           >{{ key }}<span class="inner-tag">{{ number }}</span></Tag
         >
@@ -103,7 +103,7 @@ export default {
   },
   data: function () {
     return {
-      problem_menu: [
+      problemMenu: [
         "算法",
         "数据库",
         "shell",
@@ -111,7 +111,7 @@ export default {
         "程序员面试经典",
         "剑指offer",
       ],
-      problem_type: [
+      problemType: [
         "algorithms",
         "database",
         "shell",
@@ -119,11 +119,11 @@ export default {
         "lcci",
         "lcof",
       ],
-      tag_number: {},
+      tagNumber: {},
     };
   },
   created: async function () {
-    this.tag_number = await this.GetProblemsTagNumber();
+    this.tagNumber = await this.GetProblemsTagNumber();
   },
 };
 </script>
@@ -133,10 +133,12 @@ main {
   display: flex;
   justify-content: center;
   article {
-    width: 70%;
+    min-width:666px;
+    width: 45%;
   }
   aside {
-    width: 30%;
+    width: 15%;
+    min-width:331px;
     padding: 50px;
   }
 }
@@ -226,14 +228,6 @@ main {
   }
 }
 
-.advertisement {
-  width: 100%;
-  border-radius: 5px;
-  transition: transform 0.5s;
-  &:hover {
-    transform: translateY(-10px);
-  }
-}
 aside > div {
   //侧边栏通用样式
   margin: 10px 0;

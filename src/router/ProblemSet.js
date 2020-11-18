@@ -14,7 +14,7 @@ export default [
         name: 'ProblemSetDatabase',
         meta: { name: '数据库' }
     },
-    {
+    { 
         path: 'shell',
         name: 'ProblemSetShell',
         meta: { name: 'Shell' }

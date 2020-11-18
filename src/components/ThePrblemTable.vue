@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="table-setter">
       <Input
-        v-model="search_content"
+        v-model="searchContent"
         placeholder="搜索题目 名称、内容或编号"
         class="input"
       />
@@ -41,13 +41,13 @@
         标签
         <Icon type="ios-arrow-down" />
         <DropdownMenu slot="list" class="tag-list">
-          <DropdownItem v-for="item in problems_tag_list" :key="item">{{
+          <DropdownItem v-for="item in problemsTagList" :key="item">{{
             item
           }}</DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </div>
-    <Table stripe :columns="problems_table_header" :data="problems_table_data"></Table>
+    <Table stripe :columns="problemsTableHeader" :data="problemsTableData"></Table>
   </div>
 </template>
 
@@ -56,16 +56,16 @@ export default {
   name: "TheProblemTable",
   data: function () {
     return {
-      search_content: "",
-      problems_tag_list: [],
-      problems_table_header:[],
-      problems_table_data:[]
+      searchContent: "",
+      problemsTagList: [],
+      problemsTableHeader:[],
+      problemsTableData:[]
     };
   },
   created: async function () {
-    this.problems_tag_list=await this.GetProblemsTag()
-    this.problems_table_header=await this.GetProblemsTableHeader()
-    this.problems_table_data=await this.GetProblemsTableData()
+    this.problemsTagList=await this.GetProblemsTag()
+    this.problemsTableHeader=await this.GetProblemsTableHeader()
+    this.problemsTableData=await this.GetProblemsTableData()
   },
 };
 </script>

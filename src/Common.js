@@ -4,14 +4,20 @@ exports.install = function (Vue) {
     Vue.prototype.GetProblemsTag = async function () {
         return problems_tag
     };
-    Vue.prototype.GetProblemsTableHeader= async function(){
+    Vue.prototype.GetProblemsTableHeader = async function () {
         return problems_table_header
     }
-    Vue.prototype.GetProblemsTableData= async function(){
+    Vue.prototype.GetProblemsTableData = async function () {
         return problems_table_data
     }
-    Vue.prototype.GetProblemsTagNumber= async function(){
+    Vue.prototype.GetProblemsTagNumber = async function () {
         return problems_tag_number
+    }
+    Vue.prototype.GetLeetBooks = async function () {
+        return leet_books
+    }
+    Vue.prototype.GetLeetBooksRecommended=async function () {
+        return leet_books.slice(0,12)
     }
 };
 const problems_tag = ['栈', '堆', '贪心算法'
@@ -51,15 +57,15 @@ const problems_tag = ['栈', '堆', '贪心算法'
     , 'Ordered Map'
     , ' Line Sweep']
 //TODO: 此处使用了中文作键，在以后需要修改
-const problems_tag_number={
-    数组:322,
-    动态规划:246,
-    字符串:225,
-    数字:210,
-    树:175
+const problems_tag_number = {
+    数组: 322,
+    动态规划: 246,
+    字符串: 225,
+    数字: 210,
+    树: 175
 }
 
-const problems_table_header =[
+const problems_table_header = [
     {
         title: '',
         key: 'is_solved'
@@ -85,13 +91,39 @@ const problems_table_header =[
         key: 'frequency'
     },
 ]
-const problems_table_data =[
+const problems_table_data = [
     {
         is_solved: true,
         index: '1',
         name: '两数之和',
-        solved:'7669',
-        pass_rate:'49.6%',
+        solved: '7669',
+        pass_rate: '49.6%',
         frequency: 'Lock'
     },
 ]
+
+//LeetBook电子书模型
+class LeetBook {
+    constructor(title, author, chapter, section, tags, readed, price, image) {
+        this.title = title;
+        this.author = author;
+        this.chapter = chapter;
+        this.section = section;
+        this.tags = tags;
+        this.readed = readed;
+        this.price = price;
+        this.image = image;
+    }
+}
+let leet_books = []
+//模拟书目
+for (let i = 0; i < 40; i++) {
+    leet_books.push(new LeetBook("书目" + i,
+        "作者" +
+        "abcdefghijklmn"[Math.floor(Math.random() * 12)],
+        Math.round(Math.random() * 20) + 1,
+        Math.round(Math.random() * 100) + 1,
+        ["面试", "数据结构", "算法", "会员专区"][i % 4],
+        Math.round(Math.random() * 20000),
+        Math.round(Math.random() * 100 - 75) / 10))
+}

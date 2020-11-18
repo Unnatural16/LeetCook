@@ -4,7 +4,7 @@
     <div class="flex-wrapper">
       <p>© 2020 LeetCook网络有限公司版权所有</p>
       <ul class="footer-menu">
-        <li class="menu-item" v-for="item in footer_menu" :key="item">
+        <li class="menu-item" v-for="item in footerMenu" :key="item">
           <a>{{ item }}</a><span>|</span>
         </li>
       </ul>
@@ -18,7 +18,7 @@ export default {
   name: "TheFooter",
   data: function () {
     return {
-      footer_menu: [
+      footerMenu: [
         "企业服务",
         "品牌介绍",
         "关于我们",
