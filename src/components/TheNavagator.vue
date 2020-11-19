@@ -26,7 +26,7 @@
           </Dropdown>
         </li>
       </ul>
-      <Button type="success" ghost>
+      <Button type="success" @click="$router.push({name:'App'})" ghost>
         <Icon type="md-phone-portrait" />
         下载App</Button
       >

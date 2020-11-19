@@ -106,7 +106,7 @@ main {
 
 article {
   //登录内容还没做，临时做一个css
-  background: rgb(196, 196, 196);
+  background: rgb(238, 238, 238);
   text-align: center;
   font-weight: bold;
   font-size: 72px;

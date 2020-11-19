@@ -49,6 +49,7 @@ const routes = [
     path: '/app',
     name: 'App',
     meta: { name: '应用' },
+    component: () => import('../views/App.vue')
   },
   {
     path: '/premium',
