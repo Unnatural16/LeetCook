@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: { name: 'Home' },
+    redirect: { name: 'ProblemSet', params: { type: 'all' } },
   },
   {
     path: '/home',
@@ -31,11 +31,13 @@ const routes = [
     path: '/circle',
     name: 'Circle',
     meta: { name: '讨论' },
+    component: () => import('../views/Circle.vue'),
   },
   {
     path: '/contest',
     name: 'Contest',
     meta: { name: '竞赛' },
+    component: () => import('../views/Contest.vue'),
   },
   {
     path: '/interview',

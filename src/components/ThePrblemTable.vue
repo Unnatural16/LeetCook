@@ -96,7 +96,7 @@ export default {
   display: flex;
   align-items: center;
   .input {
-    width: 60%;
+    width: 45%;
     margin-right: auto;
   }
 }

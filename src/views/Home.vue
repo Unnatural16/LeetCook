@@ -48,10 +48,10 @@
             >随机开始</router-link
           >
         </li>
-        <li>
-          <Icon type="md-shuffle" /><router-link :to="'problemset/all'"
-            >随机开始</router-link
-          >
+        <li v-for="problem in problemMenu" :key="problem">
+          <Icon type="md-document" /><router-link :to="'problemset/all'">{{
+            problem
+          }}</router-link>
         </li>
       </ul>
     </aside>
@@ -63,6 +63,18 @@
 import { mapState, mapMutations } from "vuex";
 export default {
   name: "Home",
+  data: function () {
+    return {
+      problemMenu: [
+        "算法",
+        "数据库",
+        "shell",
+        "多线程",
+        "程序员面试经典",
+        "剑指offer",
+      ],
+    };
+  },
   methods: {
     ...mapMutations(["ShowLoginDialog"]),
   },
@@ -132,13 +144,22 @@ article {
 }
 .problem-type {
   list-style: none;
+  i {
+    color: green;
+    margin-right: 10px;
+  }
   li {
     width: 100%;
     padding: 11px;
-    color:black;
-    &:hover{
-      color:cyan;
-      background:gray;
+    border-radius: 5px;
+    a {
+      color: black;
+    }
+    &:hover {
+      a {
+        color: rgb(0, 153, 255);
+      }
+      background: rgb(194, 194, 194);
     }
   }
 }

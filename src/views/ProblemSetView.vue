@@ -46,7 +46,7 @@
       <TheCalendar />
       <TheProgress />
       <List>
-        <template slot="header">
+        <template v-slot:header>
           <Icon type="md-bonfire" size="36" />
           <h2 :style="{ display: 'inline-block' }">热门推荐</h2>
         </template>
@@ -68,15 +68,16 @@
         <ListItem :style="{ 'padding-left': '20px' }">
           👨‍💻 LeetCode 精选 TOP面试题
         </ListItem>
-        <template slot="footer">
+        <template v-slot:footer>
           <p :style="{ fontSize: '20px' }">
             <Icon type="md-heart" size="24" />贡献题目
           </p>
         </template>
       </List>
       <div>
-        <Icon type="md-bookmark" size="36"/>
-        <h2 :style="{ display: 'inline-block' }">热门推荐</h2><br>
+        <Icon type="md-bookmark" size="36" />
+        <h2 :style="{ display: 'inline-block' }">热门推荐</h2>
+        <br />
         <Tag
           size="medium"
           class="problem-tag"
@@ -133,12 +134,12 @@ main {
   display: flex;
   justify-content: center;
   article {
-    min-width:666px;
+    min-width: 666px;
     width: 45%;
   }
   aside {
     width: 15%;
-    min-width:331px;
+    min-width: 331px;
     padding: 50px;
   }
 }

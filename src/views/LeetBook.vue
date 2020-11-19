@@ -59,7 +59,7 @@
         <div class="leet-book-flex">
           <a
             class="leet-book"
-            v-for="book in FilterLeetBooks(tabSelected)"
+            v-for="book in filterLeetBooks"
             :key="book.title"
           >
             <div class="image">
@@ -92,17 +92,19 @@ export default {
     };
   },
   methods: {
-    FilterLeetBooks: function (value) {
-      if (value == "全部") {
-        return this.leetBooks;
-      } else {
-        return this.leetBooks.filter((item) => item.tags.indexOf(value) > -1);
-      }
-    },
     ScrollTo: function (direction) {
       this.showArrowButton = !direction;
       this.$refs.leetBookRecommended.scrollLeft = direction ? 0 : 2000;
     },
+  },
+  computed: {
+    filterLeetBooks:function(){
+      if (this.tabSelected == "全部") {
+        return this.leetBooks;
+      } else {
+        return this.leetBooks.filter((item) => item.tags.indexOf(this.tabSelected) > -1);
+      }
+    }
   },
   created: async function () {
     this.leetBooks = await this.GetLeetBooks();
@@ -157,6 +159,10 @@ export default {
     border-radius: 40px;
     top: 40%;
     transform: translateY(-50%);
+    &:hover{
+      opacity: 0.75;
+      cursor: pointer;
+    }
   }
   .left {
     left: 10px;

@@ -1,0 +1,200 @@
+<template>
+  <div class="wrapper">
+    <div class="header">
+      <img
+        alt="竞赛"
+        src="https://static.leetcode-cn.com/cn-legacy-assets/images/LeetCode_Cup.png"
+      />
+      <h1>LeetCook竞赛</h1>
+      <h3>快来参加LeetCook竞赛，提升你的算法和厨艺水平</h3>
+    </div>
+    <div class="content">
+      <div class="flex-wrapper-head">
+        <div class="card main">
+          <h3 class="card-title">第216场周赛</h3>
+          <div class="card-time">2030-11-22：10:30 ~ 12:00</div>
+          <a class="card-tile"><Icon type="md-calendar" />添加到日程表</a>
+          <div class="card-footer">距离开始还有:</div>
+        </div>
+        <div class="card right">
+          <h3 class="card-title">第 40 场双周赛</h3>
+          <div class="card-time">2030-11-28 / 22:30 ~ 2020-11-29 / 00:00</div>
+          <a class="card-tile"><Icon type="md-calendar" />添加到日程表</a>
+          <div class="card-footer">距离开始还有:</div>
+        </div>
+      </div>
+      <div class="flex-wrapper-content">
+        <div class="rank">
+          <h1>全国排名</h1>
+          <div class="gold"><div class="inner">张三</div></div>
+          <div class="silver"><div class="inner">李四</div></div>
+          <div class="copper"><div class="inner">王五</div></div>
+        </div>
+        <div class="history">
+          <h1>往届竞赛回顾</h1>
+          <a>我的虚拟竞赛记录 ></a>
+          <Table :columns="tableHeader" :data="tableData"></Table>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "Contest",
+  data: function () {
+    return {
+      tableHeader: [
+        {
+          title: "以往竞赛",
+          key: "history",
+        },
+        {
+          title: "时长",
+          key: "time",
+        },
+      ],
+      tableData: [
+        {
+          history: "第215场周赛",
+          time: "1小时30分",
+        },
+        {
+          history: "第39场双周赛",
+          time: "1小时30分",
+        },
+      ],
+    };
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.wrapper {
+  height: 100%;
+  width: 100%;
+  background: rgb(233, 233, 233);
+}
+.header {
+  padding-bottom: 100px;
+  height: 489px;
+  text-align: center;
+  background-image: linear-gradient(
+    -150deg,
+    #222222 15%,
+    #373737 70%,
+    #3c4859 94%
+  );
+  color: white;
+  img {
+    height: 150px;
+    margin-top: 100px;
+    margin-bottom: 50px;
+  }
+  h3 {
+    margin: 10px 0;
+    color: gray;
+  }
+}
+.content {
+  margin: 0 auto;
+  max-width: 870px;
+  .flex-wrapper-head {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -100px;
+    color: white;
+    .card {
+      height: 240px;
+      border-radius: 20px;
+      display: inline-block;
+      position: relative;
+      padding: 20px;
+      h3 {
+        font-size: 30px;
+      }
+      a {
+        color: white;
+        display: block;
+        margin: 10px 0;
+      }
+      .card-footer {
+        position: absolute;
+        bottom: 20px;
+      }
+    }
+    .main {
+      width: 60%;
+      background-image: url("https://assets.leetcode-cn.com/aliyun-lc-upload/contest/weekly-contest-216/card_img");
+      background-size: cover;
+    }
+    .right {
+      width: 35%;
+      background-image: linear-gradient(rgb(79, 227, 248), rgb(14, 153, 208));
+    }
+  }
+  .flex-wrapper-content {
+    display: flex;
+    justify-content: space-between;
+    .rank {
+      width: 35%;
+      margin: 20px;
+      padding: 20px;
+      position: relative;
+      div {
+        height: 90px;
+        width: 90px;
+        border-radius: 45px;
+        overflow: hidden;
+        .inner {
+          margin: 5px;
+          height: 80px;
+          width: 80px;
+          border-radius: 40px;
+          background: rgb(211, 211, 211);
+          line-height: 80px;
+          text-align: center;
+          font-size: 36px;
+        }
+      }
+      .gold {
+        background: linear-gradient(#feea88, #d7a807);
+        margin: 20px auto;
+      }
+      .silver {
+        background-image: linear-gradient(white, rgb(171, 171, 171));
+        display: inline-block;
+      }
+      .copper {
+        background-image: linear-gradient(
+          rgb(250, 207, 163),
+          rgb(215, 124, 68)
+        );
+        display: inline-block;
+        position: absolute;
+        right: 20px;
+      }
+    }
+    .history {
+      width: 60%;
+      margin: 20px;
+      background: white;
+      box-shadow:0 0 50px 0 rgba(0,0,0,0.15);
+      border-radius: 10px;
+      h1{
+        padding:10px 20px;
+      }
+      a {
+        display:block;
+        padding:10px 20px;
+        color: gray;
+        transition: all 0.2s;
+        &:hover {
+          color: rgb(255, 86, 255);
+        }
+      }
+    }
+  }
+}
+</style>

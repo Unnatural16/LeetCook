@@ -1,5 +1,5 @@
 <template>
-  <Modal v-model="isOpen" :width="480">
+  <Modal v-model="isOpen" :width="480" class="login-wrapper">
     <h1>
       {{ ["欢迎来到力厨", "账号密码登录", "邮箱注册"][loginDialogState] }}
     </h1>
@@ -11,7 +11,9 @@
         </Select> -->
       </i-input>
       <i-input placeholder="验证码">
-        <Button slot="append" type="text">获取验证码</Button>
+        <template v-slot:append>
+          <Button type="text">获取验证码</Button>
+        </template>
       </i-input>
 
       <Button type="success" long>登录/注册</Button>
@@ -38,17 +40,19 @@
         <a @click="loginDialogState = 0">验证码登录</a>
       </div>
     </div>
-    <div slot="footer" class="login-footer">
-      <img src="../assets/qq.svg" alt="qq" />
-      <img src="../assets/github.svg" alt="github" />
-      <img src="../assets/weibo.svg" alt="weibo" />
-      <img src="../assets/weixin.svg" alt="weixin" />
-      <img src="../assets/baidu.svg" alt="baidu" />
-      <p>登录注册即代表同意力厨 <a>用户协议</a> 和 <a>隐私协议 </a></p>
-      <a>关于我们 </a>
-      <a>问题反馈 </a>
-      <a>帮助中心 </a>
-    </div>
+    <template v-slot:footer>
+      <div class="login-footer">
+        <img src="../assets/qq.svg" alt="qq" />
+        <img src="../assets/github.svg" alt="github" />
+        <img src="../assets/weibo.svg" alt="weibo" />
+        <img src="../assets/weixin.svg" alt="weixin" />
+        <img src="../assets/baidu.svg" alt="baidu" />
+        <p>登录注册即代表同意力厨 <a>用户协议</a> 和 <a>隐私协议 </a></p>
+        <a>关于我们 </a>
+        <a>问题反馈 </a>
+        <a>帮助中心 </a>
+      </div></template
+    >
   </Modal>
 </template>
 
@@ -111,7 +115,7 @@ h1 {
 </style>
 
 <style lang="scss">
-.ivu-input-wrapper {
+.login-wrapper .ivu-input-wrapper {
   margin-bottom: 20px !important;
 }
 </style>
