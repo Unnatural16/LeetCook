@@ -43,6 +43,7 @@ const routes = [
     path: '/interview',
     name: 'Interview',
     meta: { name: '企业' },
+    component: () => import('../views/Interview.vue')
   },
   {
     path: '/app',

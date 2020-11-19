@@ -1,6 +1,6 @@
 <template>
   <main class="home">
-    <article>登录后显示</article>
+    <article>请先登录</article>
     <aside>
       <img
         src="https://i.loli.net/2020/11/16/jTJnx6VwdbySA3H.jpg"

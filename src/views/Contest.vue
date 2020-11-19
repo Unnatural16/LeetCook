@@ -10,27 +10,29 @@
     </div>
     <div class="content">
       <div class="flex-wrapper-head">
-        <div class="card main">
+        <div class="card main shadow">
           <h3 class="card-title">第216场周赛</h3>
           <div class="card-time">2030-11-22：10:30 ~ 12:00</div>
           <a class="card-tile"><Icon type="md-calendar" />添加到日程表</a>
           <div class="card-footer">距离开始还有:</div>
+          <Icon class="img-icon" type="md-lock" />
         </div>
-        <div class="card right">
+        <div class="card right shadow">
           <h3 class="card-title">第 40 场双周赛</h3>
           <div class="card-time">2030-11-28 / 22:30 ~ 2020-11-29 / 00:00</div>
           <a class="card-tile"><Icon type="md-calendar" />添加到日程表</a>
           <div class="card-footer">距离开始还有:</div>
+          <Icon class="img-icon" type="md-arrow-round-forward" />
         </div>
       </div>
       <div class="flex-wrapper-content">
         <div class="rank">
           <h1>全国排名</h1>
-          <div class="gold"><div class="inner">张三</div></div>
-          <div class="silver"><div class="inner">李四</div></div>
-          <div class="copper"><div class="inner">王五</div></div>
+          <div class="gold shadow"><div class="inner">张三</div></div>
+          <div class="silver shadow"><div class="inner">李四</div></div>
+          <div class="copper shadow"><div class="inner">王五</div></div>
         </div>
-        <div class="history">
+        <div class="history shadow">
           <h1>往届竞赛回顾</h1>
           <a>我的虚拟竞赛记录 ></a>
           <Table :columns="tableHeader" :data="tableData"></Table>
@@ -111,6 +113,21 @@ export default {
       display: inline-block;
       position: relative;
       padding: 20px;
+      &:hover{
+        cursor: pointer;
+      }
+      &:hover .img-icon {
+        transform: scale(2);
+      }
+      .img-icon {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        color: rgba(128, 128, 128, 0.5);
+        font-size: 60px;
+        transform-origin: bottom right;
+        transition: transform 0.5s;
+      }
       h3 {
         font-size: 30px;
       }
@@ -180,20 +197,25 @@ export default {
       width: 60%;
       margin: 20px;
       background: white;
-      box-shadow:0 0 50px 0 rgba(0,0,0,0.15);
       border-radius: 10px;
-      h1{
-        padding:10px 20px;
+      h1 {
+        padding: 30px 20px 10px;
       }
       a {
-        display:block;
-        padding:10px 20px;
+        display: block;
+        padding: 10px 20px;
         color: gray;
         transition: all 0.2s;
         &:hover {
           color: rgb(255, 86, 255);
         }
       }
+    }
+  }
+  .shadow {
+    transition: box-shadow 0.5s;
+    &:hover {
+      box-shadow: 0 0 50px 0 rgba(0, 0, 0, 0.15);
     }
   }
 }
