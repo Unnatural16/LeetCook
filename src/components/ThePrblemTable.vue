@@ -47,7 +47,13 @@
         </DropdownMenu>
       </Dropdown>
     </div>
-    <Table stripe :columns="problemsTableHeader" :data="problemsTableData"></Table>
+    <Table stripe :columns="problemsTableHeader" :data="problemsTableData">
+      <template v-slot:name="{row}">
+        <router-link :to="{ name: 'Problem', params: { index: row.index } }">{{
+          row.name
+        }}</router-link>
+      </template>
+    </Table>
   </div>
 </template>
 
@@ -58,14 +64,38 @@ export default {
     return {
       searchContent: "",
       problemsTagList: [],
-      problemsTableHeader:[],
-      problemsTableData:[]
+      problemsTableHeader: [
+        {
+          title: "",
+          key: "is_solved",
+        },
+        {
+          title: "#",
+          key: "index",
+        },
+        {
+          title: "题名",
+          slot: "name",
+        },
+        {
+          title: "题解",
+          key: "solved",
+        },
+        {
+          title: "通过率",
+          key: "pass_rate",
+        },
+        {
+          title: "出现频率",
+          key: "frequency",
+        },
+      ],
+      problemsTableData: [],
     };
   },
   created: async function () {
-    this.problemsTagList=await this.GetProblemsTag()
-    this.problemsTableHeader=await this.GetProblemsTableHeader()
-    this.problemsTableData=await this.GetProblemsTableData()
+    this.problemsTagList = await this.GetProblemsTag();
+    this.problemsTableData = await this.GetProblemsTableData();
   },
 };
 </script>

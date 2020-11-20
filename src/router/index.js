@@ -52,6 +52,12 @@ const routes = [
     component: () => import('../views/App.vue')
   },
   {
+    path: '/problem/:index',
+    name: 'Problem',
+    meta: { name: '题目'},
+    component: () => import('../views/Problem.vue')
+  },
+  {
     path: '/premium',
     name: 'Premium',
     meta: { name: '会员' },

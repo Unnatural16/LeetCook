@@ -47,15 +47,17 @@
     <div class="leet-book-content">
       <div class="line" />
       <Tabs class="leet-book-tab inner" v-model="tabSelected" :animated="false">
-        <Button
-          type="success"
-          ghost
-          icon="md-book"
-          size="small"
-          class="my-book"
-        >
-          我的书架</Button
-        >
+        <template v-slot:extra>
+          <Button
+            type="success"
+            ghost
+            icon="md-book"
+            size="small"
+            class="my-book"
+          >
+            我的书架</Button
+          >
+        </template>
         <TabPane label="全部" name="全部"> </TabPane>
         <TabPane label="面试" name="面试"></TabPane>
         <TabPane label="数据结构" name="数据结构"></TabPane>
@@ -160,9 +162,8 @@ export default {
     top: 35px;
   }
   .my-book {
-    position: absolute;
+    position: relative;
     top: 6px;
-    right: 20px;
   }
 }
 .leet-book-flex {

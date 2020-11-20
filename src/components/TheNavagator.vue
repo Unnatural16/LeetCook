@@ -90,6 +90,7 @@ export default {
 
 <style lang="scss" scoped>
 .wrapper {
+  min-width: 920px;
   .inner-wrapper {
     display: flex;
     max-width: 1440px;

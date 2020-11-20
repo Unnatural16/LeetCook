@@ -60,6 +60,7 @@ p{
   display: flex;
   gap: 5px;
   align-items: center;
+  min-width:920px;
   p{
     margin-right:auto;
   }

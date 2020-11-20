@@ -26,7 +26,7 @@ html,
 body {
   width: 100%;
   height: 100%;
-  overflow: overlay;
+  overflow-y: overlay;
 }
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
