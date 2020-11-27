@@ -53,6 +53,12 @@
           row.name
         }}</router-link>
       </template>
+      <template v-slot:pass-rate="{row}">
+        {{row.passse/row.commits||0}}
+      </template>
+      <template v-slot:frequency>
+        <Icon type="md-lock" color="orange" size="24" />
+      </template>
     </Table>
   </div>
 </template>
@@ -66,7 +72,7 @@ export default {
       problemsTagList: [],
       problemsTableHeader: [
         {
-          title: "",
+          title: " ",
           key: "is_solved",
         },
         {
@@ -83,19 +89,19 @@ export default {
         },
         {
           title: "通过率",
-          key: "pass_rate",
+          slot: "pass-rate"
         },
         {
           title: "出现频率",
-          key: "frequency",
+          slot: "frequency",
         },
       ],
       problemsTableData: [],
     };
   },
   created: async function () {
-    this.problemsTagList = await this.GetProblemsTag();
-    this.problemsTableData = await this.GetProblemsTableData();
+    this.problemsTagList = await this.$GetProblemsTag();
+    this.problemsTableData = await this.$GetProblemsTableData();
   },
 };
 </script>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+        //此处把testCode.js的代码复制过来,就可以无视跨域
+        const workerCode =
+        `
+            console = null
+        self.onmessage = (e) => {
+            let inputData = e.data;
+            let data = {}
+            try {
+                if (inputData.fullTest) {
+                    data.fullTest=true;
+                    let beginTime = new Date().getTime()
+                    for (testSample of inputData.testSamples) {
+                        data.sampleResult==null
+                        data.result==null
+                        data.currentSample=testSample
+                        data.sampleResult = eval(inputData.func + inputData.funcName + '.apply(null,testSample)')//真值
+                        data.result = eval(inputData.code + inputData.funcName + '.apply(null,testSample)')//测试值
+                        if(data.result!=data.sampleResult){
+                            throw new Error("Values ​​are not equal")
+                        }
+                    }
+                    let endTime = new Date().getTime()
+                    data.cost = endTime - beginTime;
+                    data.pass=true//通过标识
+                } else {
+                    data.sampleResult = eval(inputData.func + inputData.funcName + '.apply(null,inputData.testSample)')//真值
+                    let beginTime = new Date().getTime()
+                    data.result = eval(inputData.code + inputData.funcName + '.apply(null,inputData.testSample)')//测试值
+                    let endTime = new Date().getTime()
+                    data.cost = endTime - beginTime;
+                }
+            } catch (err) {
+                data.result = err;
+            }
+            self.postMessage(data);
+        }
+        `
+        onmessage = (e) => {
+            let worker = new Worker(window.URL.createObjectURL(new Blob([workerCode])))
+            worker.onmessage = event => {
+                clearTimeout(timer)
+                e.source.postMessage(event.data, "*")
+                worker.terminate()
+            }
+            worker.postMessage(e.data)
+            let timer = setTimeout(() => {
+                worker.terminate()
+                e.source.postMessage({ result: 'OverTime!' }, "*")
+            }, 60 * 1000)//判断超时
+        };
+    </script>
+</head>
+
+</html>

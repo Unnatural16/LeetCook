@@ -124,7 +124,7 @@ export default {
     };
   },
   created: async function () {
-    this.tagNumber = await this.GetProblemsTagNumber();
+    this.tagNumber = await this.$GetProblemsTagNumber();
   },
 };
 </script>
@@ -134,13 +134,11 @@ main {
   display: flex;
   justify-content: center;
   article {
-    min-width: 666px;
-    width: 45%;
+    width: 720px;
   }
   aside {
-    width: 15%;
-    min-width: 331px;
-    padding: 50px;
+    width: 360px;
+    padding: 50px 20px;
   }
 }
 .title {

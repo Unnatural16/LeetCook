@@ -1,12 +1,12 @@
 <template>
   <div class="the-calendar-wrapper">
       <h2 :style="{ 'padding-left': '20px' }">每日一题</h2>
-    <Calendar class="the-calendar"/>
+    <Calendar class="the-calendar" is-expanded/>
   </div>
 </template>
 
 <script>
-import Calendar from "vue-calendar-component";
+import Calendar from 'v-calendar/lib/components/calendar.umd'
 
 export default {
   name: "TheCalendar",

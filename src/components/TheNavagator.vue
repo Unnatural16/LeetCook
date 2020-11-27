@@ -26,7 +26,7 @@
           </Dropdown>
         </li>
       </ul>
-      <Button type="success" @click="$router.push({name:'App'})" ghost>
+      <Button type="success" @click="$router.push({ name: 'App' })" ghost>
         <Icon type="md-phone-portrait" />
         下载App</Button
       >
@@ -57,7 +57,14 @@
             <a><Icon type="md-notifications-outline" /></a>
           </li>
           <li>
-            <a><Icon type="md-person" /></a>
+            <Dropdown>
+              <a><Icon type="md-person" />{{username}}</a>
+              <template v-slot:list>
+                <DropdownMenu>
+                  <DropdownItem @click.native="logout">登出</DropdownItem>
+                </DropdownMenu>
+              </template>
+            </Dropdown>
           </li>
         </template>
         <template v-else>
@@ -83,7 +90,11 @@ export default {
     ...mapState(["username"]),
   },
   methods: {
-    ...mapMutations(["ShowLoginDialog"]),
+    ...mapMutations(["ShowLoginDialog","Login"]),
+    logout: async function(){
+      await this.$Logout();
+      this.Login('')
+    }
   },
 };
 </script>

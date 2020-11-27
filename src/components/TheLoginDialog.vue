@@ -3,43 +3,100 @@
     <h1>
       {{ ["欢迎来到力厨", "账号密码登录", "邮箱注册"][loginDialogState] }}
     </h1>
-    <div v-if="loginDialogState == 0">
-      <i-input placeholder="输入手机号">
-        <!-- <Select slot="prepend" v-model="countryNumber" style="width: 80px"> TODOS:会导致一些不可名状的bug，暂时注释
+    <Form v-if="loginDialogState == 0">
+      <FormItem>
+        <i-input placeholder="输入手机号" key>
+          <Select slot="prepend" style="width: 80px">
           <Option value="+86">+86</Option>
           <Option value="+1">+1</Option>
-        </Select> -->
-      </i-input>
-      <i-input placeholder="验证码">
-        <template v-slot:append>
-          <Button type="text">获取验证码</Button>
-        </template>
-      </i-input>
+        </Select>
+        </i-input>
+      </FormItem>
+      <FormItem>
+        <i-input placeholder="验证码" key>
+          <template v-slot:append>
+            <Button type="text" @click="$Message.error('尚未完成QAQ')"
+              >获取验证码</Button
+            >
+          </template>
+        </i-input>
+      </FormItem>
+      <FormItem>
+        <Button type="success" @click="$Message.error('尚未完成QAQ')" long
+          >登录/注册</Button
+        >
+      </FormItem>
 
-      <Button type="success" long>登录/注册</Button>
       <div class="small-button">
         <a @click="loginDialogState = 1">账号密码登录</a>
         <a @click="loginDialogState = 2">邮箱注册</a>
       </div>
-    </div>
-    <div v-if="loginDialogState == 1">
-      <i-input placeholder="手机号/邮箱"></i-input>
-      <i-input type="password" placeholder="输入密码"></i-input>
-      <Button type="success" long>登录</Button>
+    </Form>
+    <Form
+      v-if="loginDialogState == 1"
+      :model="formLogin"
+      :rules="ruleAccount"
+      ref="login"
+    >
+      <FormItem prop="username">
+        <i-input
+          placeholder="请输入用户名"
+          v-model="formLogin.username"
+          @keyup.enter.native="handleSubmit('login')"
+        ></i-input>
+      </FormItem>
+      <FormItem prop="password">
+        <i-input
+          type="password"
+          placeholder="输入密码"
+          v-model="formLogin.password"
+          @keyup.enter.native="handleSubmit('login')"
+        ></i-input>
+      </FormItem>
+      <FormItem>
+        <Button type="success" @click="handleSubmit('login')" long>登录</Button>
+      </FormItem>
+
       <div class="small-button">
         <a @click="loginDialogState = 0">验证码登录</a>
-        <a>忘记密码</a>
+        <a @click="$Message.error('尚未完成QAQ')">忘记密码</a>
       </div>
-    </div>
-    <div v-if="loginDialogState == 2">
-      <i-input placeholder="输入邮箱"></i-input>
-      <i-input type="password" placeholder="输入密码"></i-input>
-      <i-input placeholder="你的称呼"></i-input>
-      <Button type="success" long>注册</Button>
+    </Form>
+    <Form
+      v-if="loginDialogState == 2"
+      :model="formRegister"
+      :rules="ruleAccount"
+      ref="register"
+    >
+      <FormItem>
+        <i-input placeholder="输入邮箱(暂时不需要)"></i-input>
+      </FormItem>
+
+      <FormItem prop="password">
+        <i-input
+          type="password"
+          placeholder="输入密码"
+          v-model="formRegister.password"
+          @keyup.enter.native="handleSubmit('register')"
+        ></i-input>
+      </FormItem>
+      <FormItem prop="username">
+        <i-input
+          placeholder="你的用户名"
+          v-model="formRegister.username"
+          @keyup.enter.native="handleSubmit('register')"
+        ></i-input>
+      </FormItem>
+
+      <FormItem>
+        <Button type="success" long @click="handleSubmit('register')"
+          >注册</Button
+        >
+      </FormItem>
       <div class="small-button">
         <a @click="loginDialogState = 0">验证码登录</a>
       </div>
-    </div>
+    </Form>
     <template v-slot:footer>
       <div class="login-footer">
         <img src="../assets/qq.svg" alt="qq" />
@@ -64,6 +121,37 @@ export default {
   data: function () {
     return {
       loginDialogState: 0, //分别代表手机、账号密码、邮箱
+      formRegister: {
+        username: "",
+        password: "",
+      },
+      formLogin: {
+        username: "",
+        password: "",
+      },
+      number: "",
+      ruleAccount: {
+        username: [
+          {
+            type: "string",
+            min: 3,
+            max: 20,
+            message: "用户名应为3到20个字符之内",
+            trigger: "blur",
+            required: true,
+          },
+        ],
+        password: [
+          {
+            type: "string",
+            min: 3,
+            max: 20,
+            message: "密码应为3到20个字符之内",
+            trigger: "blur",
+            required: true,
+          },
+        ],
+      },
     };
   },
   computed: {
@@ -78,7 +166,36 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["ShowLoginDialog"]),
+    ...mapMutations(["ShowLoginDialog","Login"]),
+    handleSubmit: function (name) {
+      this.$refs[name].validate(async (valid) => {
+        if (valid) {
+          if (name == "login") {
+            let result = await this.$Login(
+              this.formLogin.username,
+              this.formLogin.password
+            );
+            if (result) {
+              this.Login(result)
+              this.isOpen=false;
+            } else {
+              this.$Message.error("用户名或密码错误")
+            }
+          }else if (name == "register"){
+            let result = await this.$Register(
+              this.formRegister.username,
+              this.formRegister.password
+            );
+            if (result) {
+              this.Login(result.username)
+              this.isOpen=false;
+            } else {
+              this.$Message.error("注册失败，请更换用户名")
+            }
+          }
+        }
+      });
+    },
   },
 };
 </script>
@@ -115,7 +232,4 @@ h1 {
 </style>
 
 <style lang="scss">
-.login-wrapper .ivu-input-wrapper {
-  margin-bottom: 20px !important;
-}
 </style>

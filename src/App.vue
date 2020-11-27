@@ -11,6 +11,7 @@
 import TheNavagator from "@/components/TheNavagator";
 import TheFooter from "@/components/TheFooter";
 import TheLoginDialog from "@/components/TheLoginDialog";
+import {mapMutations} from 'vuex';
 export default {
   name: "app",
   components: {
@@ -18,6 +19,12 @@ export default {
     TheFooter,
     TheLoginDialog,
   },
+  methods: {
+    ...mapMutations(["Login"])
+  },
+  created: async function () {
+    this.Login(await this.$Account())
+  }
 };
 </script>
 

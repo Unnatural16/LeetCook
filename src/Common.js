@@ -1,23 +1,37 @@
+const axios = require('axios')
+const host = 'http://localhost:8080'
 //此文件定义了全局变量、方法和api,同时模拟后台发送的数据
 //以后将会实现与后台联动
 exports.install = function (Vue) {
-    Vue.prototype.GetProblemsTag = async function () {
+    Vue.prototype.$GetProblemsTag = async function () {
         return problems_tag
     };
-    Vue.prototype.GetProblemsTableData = async function () {
-        return problems_table_data
+    Vue.prototype.$GetProblemsTableData = async function () {
+        return (await axios.get(host + '/api/problems')).data;
     }
-    Vue.prototype.GetProblemsTagNumber = async function () {
+    Vue.prototype.$GetProblemsTagNumber = async function () {
         return problems_tag_number
     }
-    Vue.prototype.GetLeetBooks = async function () {
+    Vue.prototype.$GetLeetBooks = async function () {
         return leet_books
     }
-    Vue.prototype.GetLeetBooksRecommended = async function () {
+    Vue.prototype.$GetLeetBooksRecommended = async function () {
         return leet_books.slice(0, 12)
     }
-    Vue.prototype.GetProblemData = async function (index) {
-        return problem_data[index];
+    Vue.prototype.$GetProblemData = async function (index) {
+        return (await axios.get(host + '/api/problems/' + index)).data
+    }
+    Vue.prototype.$Account = async function () {
+        return (await axios.get(host + '/api/account')).data
+    }
+    Vue.prototype.$Login = async function (username, password) {
+        return (await axios.post(host + '/api/login', { username, password })).data
+    }
+    Vue.prototype.$Register = async function (username, password) {
+        return (await axios.post(host + '/api/register', { username, password })).data
+    }
+    Vue.prototype.$Logout = async function () {
+        return (await axios.post(host + '/api/logout')).data
     }
 };
 const problems_tag = ['栈', '堆', '贪心算法'
@@ -92,34 +106,3 @@ for (let i = 0; i < 40; i++) {
         Math.round(Math.random() * 20000),
         Math.round(Math.random() * 100 - 75) / 10))
 }
-
-const problems_table_data = [
-    {
-        is_solved: true,
-        index: '1',
-        name: '两数之和',
-        solved: '7669',
-        pass_rate: '49.6%',
-        frequency: 'Lock',
-    },
-]
-
-const problem_data = [null, {
-    index: '1',
-    name: '两数之和',
-    solved: '7669',
-    difficulty:'easy',
-    liked:9657,
-    description: 
-    `给定一个整数数组nums和一个目标值 target，请你在该数组中找出和为目标值的那两个整数，并返回他们的数组下标。
-
-    你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。`,
-    samples:[
-    `给定 nums = [2, 7, 11, 15], target = 9
-
-    因为 nums[0] + nums[1] = 2 + 7 = 9
-    所以返回 [0, 1]`],
-    passes:1552504,
-    commits:3148124,
-
-}]

@@ -131,8 +131,8 @@ export default {
     },
   },
   created: async function () {
-    this.leetBooks = await this.GetLeetBooks();
-    this.leetBooksRecommended = await this.GetLeetBooksRecommended();
+    this.leetBooks = await this.$GetLeetBooks();
+    this.leetBooksRecommended = await this.$GetLeetBooksRecommended();
   },
 };
 </script>
