@@ -22,16 +22,23 @@ exports.install = function (Vue) {
         return (await axios.get(host + '/api/problems/' + index)).data
     }
     Vue.prototype.$Account = async function () {
-        return (await axios.get(host + '/api/account')).data
+        this.$store.commit('Login', (await axios.get(host + '/api/account')).data)
     }
     Vue.prototype.$Login = async function (username, password) {
-        return (await axios.post(host + '/api/login', { username, password })).data
+        try {
+            await axios.post(host + '/api/login', { username, password })
+            this.$store.commit('Login', username);
+        } catch (e) {
+            this.$store.commit('Login', '');
+        }
+
     }
     Vue.prototype.$Register = async function (username, password) {
         return (await axios.post(host + '/api/register', { username, password })).data
     }
     Vue.prototype.$Logout = async function () {
-        return (await axios.post(host + '/api/logout')).data
+        await axios.post(host + '/api/logout')
+        this.$store.commit('Login', '');
     }
     Vue.prototype.$SummitProblem = async function (index, cost) { //发送题目序号和时间花费,返回值是超越了多少百分比的人
         return (await axios.post(host + '/api/SummitProblem', { index, cost })).data

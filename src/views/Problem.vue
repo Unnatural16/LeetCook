@@ -80,10 +80,10 @@
           <span @click="code = problemData.template">
             <Icon type="md-return-left" />还原模板</span
           >
-          <span @click="editProblem">
+          <span @click="editProblem" v-if="$store.state.userMessage.auth">
             <Icon type="md-construct" />编辑题目</span
           >
-          <span @click="deleteProblem">
+          <span @click="deleteProblem" v-if="$store.state.userMessage.auth">
             <Icon type="md-construct" />删除题目</span
           >
         </nav>
@@ -332,6 +332,7 @@ aside {
 }
 .right-wrapper {
   height: 100%;
+  min-width: 480px;
   flex-direction: column;
   display: flex;
   .main-coder {

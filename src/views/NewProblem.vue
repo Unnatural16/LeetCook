@@ -261,8 +261,6 @@ export default {
           let args = data.testSamples[i].value.split("\n");
           let result = [];
           for (let j = 0; j < data.args.length; j++) {
-            console.log(data.args[j]);
-            console.log(args[j]);
             result[j] = this.$argsTransformMap[data.args[j]](args[j]);
           }
           data.testSamples[i] = result;

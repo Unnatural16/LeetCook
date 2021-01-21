@@ -85,7 +85,6 @@ export default {
     ...mapMutations(["ShowLoginDialog", "Login"]),
     logout: async function () {
       await this.$Logout();
-      this.Login("");
     },
   },
 };

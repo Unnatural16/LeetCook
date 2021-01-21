@@ -167,21 +167,28 @@ export default {
   },
   methods: {
     ...mapMutations(["ShowLoginDialog", "Login"]),
-    handleSubmit: function (name) {
+    handleSubmit: async function (name) {
+      let flag;
       this.$refs[name].validate(async (valid) => {
-        if (valid) {
-          if (name == "login") {
-            let result = await this.$Login(
-              this.formLogin.username,
-              this.formLogin.password
-            );
-            if (result) {
-              this.Login(result);
+        flag = valid;
+      });
+      if (!flag) return;
+      switch (name) {
+        case "login":
+          {
+            try {
+              await this.$Login(
+                this.formLogin.username,
+                this.formLogin.password
+              );
               this.isOpen = false;
-            } else {
+            } catch (error) {
               this.$Message.error("用户名或密码错误");
             }
-          } else if (name == "register") {
+          }
+          break;
+        case "register":
+          {
             try {
               let result = await this.$Register(
                 this.formRegister.username,
@@ -192,11 +199,13 @@ export default {
                 this.isOpen = false;
               }
             } catch (e) {
-              this.$Message.error("账号已注册");
+              this.$Message.error(e.response);
             }
           }
-        }
-      });
+          break;
+        default:
+          break;
+      }
     },
   },
 };

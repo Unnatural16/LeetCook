@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import ProblemSet from './ProblemSet'
+import store from '../store/index'
 
 Vue.use(VueRouter)
 
@@ -69,7 +69,13 @@ const routes = [
   {
     path: '/newProblem',
     name: 'NewProblem',
-    component: () =>import('../views/NewProblem.vue')
+    meta: { name: '提交问题' },
+    component: () => import('../views/NewProblem.vue'),
+    beforeEnter: function (to, from, next) {
+      if (store.state.userMessage.auth) {
+        next();
+      }
+    }
   },
   {
     path: '/premium',

@@ -24,7 +24,7 @@ export default {
     ...mapActions(["GetUserMessageAsync", "GetProblemsAsync"]),
   },
   created: async function () {
-    this.Login(await this.$Account());
+    await this.$Account();
     if (this.$store.state.username) {
       await this.GetUserMessageAsync(); //在根组件中获取最新消息
     }
