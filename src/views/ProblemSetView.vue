@@ -24,11 +24,11 @@
       <div class="hr" />
       <div class="tag-bar">
         <Tag color="primary"
-          >已解决{{ solved("all") + "/" + problems.length }}</Tag
+          >已解决{{ solved["all"] + "/" + problems.length }}</Tag
         >-
-        <Tag color="success">简单{{ difficultyCount("easy") }}</Tag>
-        <Tag color="warning">中等{{ difficultyCount("medium") }}</Tag>
-        <Tag color="error">困难{{ difficultyCount("hard") }}</Tag>
+        <Tag color="success">简单{{ difficultyCount["easy"] }}</Tag>
+        <Tag color="warning">中等{{ difficultyCount["medium"] }}</Tag>
+        <Tag color="error">困难{{ difficultyCount["hard"] }}</Tag>
         <Button><Icon type="md-create" />随机开始</Button>
       </div>
       <div class="hr" />
@@ -48,12 +48,12 @@
       <TheCalendar />
       <TheProgress
         v-bind="{
-          easyCount: difficultyCount('easy'),
-          mediumCount: difficultyCount('medium'),
-          hardCount: difficultyCount('hard'),
-          easySolved: solved('easy'),
-          mediumSolved: solved('medium'),
-          hardSolved: solved('hard'),
+          easyCount: difficultyCount['easy'],
+          mediumCount: difficultyCount['medium'],
+          hardCount: difficultyCount['hard'],
+          easySolved: solved['easy'],
+          mediumSolved: solved['medium'],
+          hardSolved: solved['hard'],
         }"
       />
       <List>
@@ -80,7 +80,10 @@
           👨‍💻 LeetCode 精选 TOP面试题
         </ListItem>
         <template v-slot:footer>
-          <p :style="{ fontSize: '20px',cursor: 'pointer'}" @click="$router.push({ name:'NewProblem'})">
+          <p
+            :style="{ fontSize: '20px', cursor: 'pointer' }"
+            @click="$router.push({ name: 'NewProblem' })"
+          >
             <Icon
               type="md-heart"
               size="24"
@@ -141,34 +144,30 @@ export default {
   },
   computed: {
     ...mapState(["userMessage", "problems"]),
-  },
-  methods: {
-    solved: function (difficulty) {
-      //各难度解题数量
-      if (this.userMessage.PassRecord && Array.isArray(this.problems)) {
-        let res = 0;
-        let passRecord = this.userMessage.PassRecord;
-        for (let key in passRecord) {
-          if (
-            (passRecord[key] == "solved" && difficulty == "all") ||
-            difficulty == this.problems[key].difficulty
-          ) {
-            res++;
+    solved: function () {
+      return this.userMessage.PassRecord.reduce(
+        (obj, current, index) => {
+          if (current == "solved") {
+            obj[this.problems[index].difficulty]++;
           }
+          return obj;
+        },
+        {
+          all: this.userMessage.PassRecord.length,
+          easy: 0,
+          medium: 0,
+          hard: 0,
         }
-        return res;
-      } else {
-        return 0;
-      }
+      );
     },
-    //各难度题目数量
-    difficultyCount: function (difficulty) {
-      if (Array.isArray(this.problems)) {
-        return this.problems.filter((item) => item.difficulty == difficulty)
-          .length;
-      } else {
-        return 0;
-      }
+    difficultyCount: function () {
+      return this.problems.reduce(
+        (obj, current) => {
+          obj[current]++;
+          return obj;
+        },
+        { easy: 0, medium: 0, hard: 0 }
+      );
     },
   },
   created: async function () {
