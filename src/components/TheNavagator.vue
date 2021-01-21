@@ -53,28 +53,20 @@
           </Dropdown>
         </li>
         <template v-if="username.length > 0">
-          <li>
-            <a><Icon type="md-notifications-outline" /></a>
-          </li>
-          <li>
-            <Dropdown>
-              <a><Icon type="md-person" />{{username}}</a>
-              <template v-slot:list>
-                <DropdownMenu>
-                  <DropdownItem @click.native="logout">登出</DropdownItem>
-                </DropdownMenu>
-              </template>
-            </Dropdown>
-          </li>
+          <a><Icon type="md-notifications-outline" /></a>
+          <Dropdown>
+            <a><Icon type="md-person" />{{ username }}</a>
+            <template v-slot:list>
+              <DropdownMenu>
+                <DropdownItem @click.native="logout">登出</DropdownItem>
+              </DropdownMenu>
+            </template>
+          </Dropdown>
         </template>
         <template v-else>
-          <li>
-            <a @click="ShowLoginDialog(true)">登录</a>
-          </li>
+          <a @click="ShowLoginDialog(true)">登录</a>
           <span>或</span>
-          <li>
-            <a @click="ShowLoginDialog(true)">注册</a>
-          </li>
+          <a @click="ShowLoginDialog(true)">注册</a>
         </template>
       </ul>
     </div>
@@ -90,11 +82,11 @@ export default {
     ...mapState(["username"]),
   },
   methods: {
-    ...mapMutations(["ShowLoginDialog","Login"]),
-    logout: async function(){
+    ...mapMutations(["ShowLoginDialog", "Login"]),
+    logout: async function () {
       await this.$Logout();
-      this.Login('')
-    }
+      this.Login("");
+    },
   },
 };
 </script>

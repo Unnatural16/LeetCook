@@ -6,7 +6,7 @@ exports.install = function (Vue) {
     Vue.prototype.$GetProblemsTag = async function () {
         return problems_tag
     };
-    Vue.prototype.$GetProblemsTableData = async function () {
+    Vue.prototype.$GetProblems = async function () {
         return (await axios.get(host + '/api/problems')).data;
     }
     Vue.prototype.$GetProblemsTagNumber = async function () {
@@ -32,6 +32,45 @@ exports.install = function (Vue) {
     }
     Vue.prototype.$Logout = async function () {
         return (await axios.post(host + '/api/logout')).data
+    }
+    Vue.prototype.$SummitProblem = async function (index, cost) { //发送题目序号和时间花费,返回值是超越了多少百分比的人
+        return (await axios.post(host + '/api/SummitProblem', { index, cost })).data
+    }
+    Vue.prototype.$GetSummitRecord = async function (index) {
+        if (this.$store.state.username) {
+            return (await axios.get(host + '/api/GetSummitRecord', { params: { index } })).data.reverse();
+        }
+    }
+    Vue.prototype.$GetUserMessage = async function () {
+        return (await axios.get(host + '/api/GetUserMessage')).data;
+    }
+    //返回题目序号
+    Vue.prototype.$PostProblem = async function (data) {
+        if (data.index == null) {
+            return (await axios.post(host + '/api/CreateProblem', data)).data;
+        } else {
+            return (await axios.put(host + `/api/UpdateProblem/${data.index}`, data)).data;
+        }
+    }
+    Vue.prototype.$DeleteProblem = async function (index) {
+        return (await axios.delete(host + `/api/DeleteProblem/${index}`,)).data;
+    }
+    //参数转换表，负责将解析字符串形式的参数
+    Vue.prototype.$argsTransformMap = {
+        Number: (number) => parseInt(number),
+        String: (string) => string.trim().slice(1, -1),
+        Boolean: (boolean) => boolean.toLowerCase() == "true",
+        Numbers: (array) => array.trim().slice(1, -1).split(",").map(Number),
+        Strings: (array) => array.trim().slice(1, -1).split(",").map(String),
+        Booleans: (array) => array.trim().slice(1, -1).split(",").map(Boolean),
+    }
+    Vue.prototype.$argsToString = {
+        Number: (number) => number.toString(),
+        String: (string) => `"${string}"`,
+        Boolean: (boolean) => boolean.toString(),
+        Numbers: (array) => '[' + array.map(Number).join(',') + ']',
+        Strings: (array) => '[' + array.map(String).join(',') + ']',
+        Booleans: (array) => '[' + array.map(Boolean).join(',') + ']',
     }
 };
 const problems_tag = ['栈', '堆', '贪心算法'
@@ -83,13 +122,13 @@ const problems_tag_number = {
 
 //LeetBook电子书模型
 class LeetBook {
-    constructor(title, author, chapter, section, tags, readed, price, image) {
+    constructor(title, author, chapter, section, tags, read, price, image) {
         this.title = title;
         this.author = author;
         this.chapter = chapter;
         this.section = section;
         this.tags = tags;
-        this.readed = readed;
+        this.read = read;
         this.price = price;
         this.image = image;
     }

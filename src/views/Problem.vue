@@ -40,13 +40,32 @@
           </TabPane>
           <TabPane label="评论" disabled>评论区(待完成)</TabPane>
           <TabPane label="题解" disabled>题解(待完成)</TabPane>
-          <TabPane label="提交记录" name="record">提交记录(待完成)</TabPane>
+          <TabPane label="提交记录" name="record">
+            <TheSummitRecord
+              :current-result="summitResult"
+              :SummitRecordData="summitRecordData"
+              :Percentage="percentage"
+            />
+          </TabPane>
         </Tabs>
+        <Spin fix v-if="spinTab" />
         <footer>
-          <Button><Icon type="md-list" />题目列表</Button>
+          <Button @click="$router.push({ name: 'ProblemSet' })"
+            ><Icon type="md-list" />题目列表</Button
+          >
           <Button><Icon type="md-shuffle" />随机一题</Button>
-          <Button><Icon type="md-arrow-dropleft" />上一题</Button>
-          <Button>下一题<Icon type="md-arrow-dropright" /></Button>
+          <Button
+            @click="
+              $router.push({ params: { index: $route.params.index - 1 } })
+            "
+            ><Icon type="md-arrow-dropleft" />上一题</Button
+          >
+          <Button
+            @click="
+              $router.push({ params: { index: $route.params.index + 1 } })
+            "
+            >下一题<Icon type="md-arrow-dropright"
+          /></Button>
         </footer>
       </aside>
     </template>
@@ -57,11 +76,15 @@
             <Option key="javascript" value="Javascript">Javascript</Option>
             <Option key="vanillaJs" value="VanillaJs">VanillaJs</Option>
           </Select>
-          <span :style="{ color: 'green' }"
-            ><Icon type="md-timer" />模拟面试</span
-          >
+          <span style="color: green"><Icon type="md-timer" />模拟面试</span>
           <span @click="code = problemData.template">
             <Icon type="md-return-left" />还原模板</span
+          >
+          <span @click="editProblem">
+            <Icon type="md-construct" />编辑题目</span
+          >
+          <span @click="deleteProblem">
+            <Icon type="md-construct" />删除题目</span
           >
         </nav>
         <div class="main-coder">
@@ -89,6 +112,7 @@
             />
           </TabPane>
           <TabPane label="代码执行结果" name="result">
+            <Spin fix v-if="testSpin" />
             <div v-if="testStatus == 'pending'" class="pending">
               请先运行您的代码
             </div>
@@ -129,44 +153,42 @@
 </template>
 
 <script>
+import TheSummitRecord from "../components/TheSummitRecord";
+// import {mapState} from 'vuex';
+
 export default {
   name: "Problem",
   data: function () {
     return {
-      problemData: {},
+      problemData: {}, //题目数据
       splitModel: "480px",
-      code: "",
-      mainTab:"description",
+      code: "", //用户代码
+      mainTab: "description",
       lang: "Javascript",
-      testSample: "",
-      testResult: "",
-      sampleTestResult: "",
-      costTime: 0,
+      testSample: "", //测试集
+      testResult: "", //测试结果
+      sampleTestResult: "", //预期结果
+      costTime: 0, //代码运行时间
       codeOptions: {
+        //用于代码编辑器
         enableBasicAutocompletion: true,
         enableSnippets: true,
         enableLiveAutocompletion: true /*自动补全*/,
         fontSize: 16,
       },
       tab: "test",
-      //测试四大状态,["pending", "succeed", "error", "overtime"]
-      testStatus: "pending",
+      testStatus: "pending", //等待代码运行
+      summitResult: {}, //添加后结果，传递给TheSummitRecord子组件
+      percentage: "",
+      summitRecordData: [], //从服务器上获取的用户提交记录数据，传递给子组件
 
-      //参数转换表
-      argsTransformMap: {
-        Number: (number) => parseInt(number),
-        String: (string) => {
-          string.trim().slice(1, -1);
-        },
-        Boolean: (boolean) => boolean.toLowerCase() == "true",
-        Numbers: (array) => array.trim().slice(1, -1).split(",").map(Number),
-        Strings: (array) => array.trim().slice(1, -1).split(",").map(String),
-        Booleans: (array) => array.trim().slice(1, -1).split(",").map(Boolean),
-      },
+      spinTab: true,
+      testSpin: false,
     };
   },
   components: {
     editor: require("vue2-ace-editor"),
+    TheSummitRecord,
   },
   methods: {
     editorInit: function () {
@@ -177,7 +199,8 @@ export default {
     },
     //测试示例
     test: function () {
-      this.tab="result"
+      this.testSpin = true;
+      this.tab = "result";
       this.testStatus = "succeed";
       this.$refs.testCode.contentWindow.postMessage(
         {
@@ -194,6 +217,7 @@ export default {
     },
     //完整测试
     summit: function () {
+      this.spinTab = true;
       this.mainTab = "record";
       this.$refs.testCode.contentWindow.postMessage(
         {
@@ -210,32 +234,72 @@ export default {
     argsTransform: function (args, type) {
       args = args.split("\n");
       for (let i = 0; i < args.length; i++) {
-        args[i] = this.argsTransformMap[type[i]](args[i]);
+        args[i] = this.$argsTransformMap[type[i]](args[i]);
       }
       return args;
     },
+    editProblem: function () {
+      this.$router.push({
+        name: "NewProblem",
+        query: { index: this.$route.params.index },
+      });
+    },
+    deleteProblem: async function () {
+      try {
+        this.$DeleteProblem(this.$route.params.index);
+        this.$router.replace({ name: "ProblemSet" });
+      } catch (e) {
+        this.$Message.error(e);
+      }
+    },
+  },
+  beforeRouteUpdate: async function (to, from, next) {
+    this.spinTab = true;
+    const data = await this.$GetProblemData(to.params.index);
+    if (data) {
+      this.problemData = data;
+      this.code = this.problemData.template;
+      this.testSample = this.problemData.testSample;
+      this.summitRecordData = await this.$GetSummitRecord(to.params.index);
+      next();
+    }
+    this.spinTab = false;
   },
   created: async function () {
     this.problemData = await this.$GetProblemData(this.$route.params.index);
+    this.summitRecordData = await this.$GetSummitRecord(
+      this.$route.params.index
+    );
+    this.spinTab = false;
     let tempMap = {
       easy: "green",
-      medium: "yellow",
+      medium: "orange",
       hard: "red",
     };
     this.$refs.difficulty.style.color = tempMap[this.problemData.difficulty];
     this.code = this.problemData.template;
     this.testSample = this.problemData.testSample;
     //与iframe通信
-    let self = this;
-    window.onmessage = (e) => {
-      if (e.source === self.$refs.testCode.contentWindow) {
-        if (e.data.fullTest) {
-          console.log(e.data)
-          this.mainTab="record"
+    window.onmessage = async (e) => {
+      if (e.source === this.$refs.testCode.contentWindow) {
+        if (e.data.summit) {
+          this.summitResult = e.data;
+          this.mainTab = "record";
+          let percentage = await this.$SummitProblem(
+            this.problemData.index,
+            e.data.cost
+          );
+          this.percentage =
+            percentage != null ? (percentage * 100).toFixed(2) : null;
+          this.summitRecordData = await this.$GetSummitRecord(
+            this.$route.params.index
+          );
+          this.spinTab = false;
         } else {
-          self.testResult = e.data.result || "undefined";
-          self.costTime = e.data.cost;
-          self.sampleTestResult = e.data.sampleResult;
+          this.testSpin = false;
+          this.testResult = e.data.result || "undefined";
+          this.costTime = e.data.cost;
+          this.sampleTestResult = e.data.sampleResult;
         }
       }
     };

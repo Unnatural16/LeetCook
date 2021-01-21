@@ -23,10 +23,12 @@
       </div>
       <div class="hr" />
       <div class="tag-bar">
-        <Tag color="primary">已解决</Tag>-
-        <Tag color="success">简单</Tag>
-        <Tag color="error">困难</Tag>
-        <Tag color="warning">中等</Tag>
+        <Tag color="primary"
+          >已解决{{ solved("all") + "/" + problems.length }}</Tag
+        >-
+        <Tag color="success">简单{{ difficultyCount("easy") }}</Tag>
+        <Tag color="warning">中等{{ difficultyCount("medium") }}</Tag>
+        <Tag color="error">困难{{ difficultyCount("hard") }}</Tag>
         <Button><Icon type="md-create" />随机开始</Button>
       </div>
       <div class="hr" />
@@ -44,7 +46,16 @@
         alt="广告"
       />
       <TheCalendar />
-      <TheProgress />
+      <TheProgress
+        v-bind="{
+          easyCount: difficultyCount('easy'),
+          mediumCount: difficultyCount('medium'),
+          hardCount: difficultyCount('hard'),
+          easySolved: solved('easy'),
+          mediumSolved: solved('medium'),
+          hardSolved: solved('hard'),
+        }"
+      />
       <List>
         <template v-slot:header>
           <Icon type="md-bonfire" size="36" />
@@ -69,8 +80,12 @@
           👨‍💻 LeetCode 精选 TOP面试题
         </ListItem>
         <template v-slot:footer>
-          <p :style="{ fontSize: '20px' }">
-            <Icon type="md-heart" size="24" />贡献题目
+          <p :style="{ fontSize: '20px',cursor: 'pointer'}" @click="$router.push({ name:'NewProblem'})">
+            <Icon
+              type="md-heart"
+              size="24"
+              :style="{ color: 'rgb(160, 51, 51)' }"
+            />贡献题目
           </p>
         </template>
       </List>
@@ -94,6 +109,7 @@
 import TheProblemTable from "../components/ThePrblemTable";
 import TheCalendar from "../components/TheCalendar";
 import TheProgress from "../components/TheProgress";
+import { mapState } from "vuex";
 
 export default {
   name: "ProblemSetView",
@@ -122,6 +138,38 @@ export default {
       ],
       tagNumber: {},
     };
+  },
+  computed: {
+    ...mapState(["userMessage", "problems"]),
+  },
+  methods: {
+    solved: function (difficulty) {
+      //各难度解题数量
+      if (this.userMessage.PassRecord && Array.isArray(this.problems)) {
+        let res = 0;
+        let passRecord = this.userMessage.PassRecord;
+        for (let key in passRecord) {
+          if (
+            (passRecord[key] == "solved" && difficulty == "all") ||
+            difficulty == this.problems[key].difficulty
+          ) {
+            res++;
+          }
+        }
+        return res;
+      } else {
+        return 0;
+      }
+    },
+    //各难度题目数量
+    difficultyCount: function (difficulty) {
+      if (Array.isArray(this.problems)) {
+        return this.problems.filter((item) => item.difficulty == difficulty)
+          .length;
+      } else {
+        return 0;
+      }
+    },
   },
   created: async function () {
     this.tagNumber = await this.$GetProblemsTagNumber();

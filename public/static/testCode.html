@@ -3,16 +3,31 @@
 
 <head>
     <script>
-        //此处把testCode.js的代码复制过来,就可以无视跨域
         const workerCode =
         `
             console = null
+        function Judge(test,real){
+            if(Array.isArray(test)&&Array.isArray(real)){
+                if(test.length!=real.length){
+                    return false
+                }else{
+                    for(let i=0;i<test.length;i++){
+                        if(!Judge(test[i],real[i])){
+                            return false
+                        }
+                    }
+                    return true
+                }
+            }else{
+                return test==real;
+            }
+        }
         self.onmessage = (e) => {
             let inputData = e.data;
             let data = {}
             try {
                 if (inputData.fullTest) {
-                    data.fullTest=true;
+                    data.summit=true;
                     let beginTime = new Date().getTime()
                     for (testSample of inputData.testSamples) {
                         data.sampleResult==null
@@ -20,13 +35,14 @@
                         data.currentSample=testSample
                         data.sampleResult = eval(inputData.func + inputData.funcName + '.apply(null,testSample)')//真值
                         data.result = eval(inputData.code + inputData.funcName + '.apply(null,testSample)')//测试值
-                        if(data.result!=data.sampleResult){
-                            throw new Error("Values ​​are not equal")
+                        if(!Judge(data.result,data.sampleResult)){
+                            data.type ='error'
+                            throw new Error(data.result==null?'null':data.result)
                         }
                     }
                     let endTime = new Date().getTime()
                     data.cost = endTime - beginTime;
-                    data.pass=true//通过标识
+                    data.type='pass'
                 } else {
                     data.sampleResult = eval(inputData.func + inputData.funcName + '.apply(null,inputData.testSample)')//真值
                     let beginTime = new Date().getTime()
@@ -35,6 +51,7 @@
                     data.cost = endTime - beginTime;
                 }
             } catch (err) {
+                data.type='error';
                 data.result = err;
             }
             self.postMessage(data);
@@ -50,8 +67,8 @@
             worker.postMessage(e.data)
             let timer = setTimeout(() => {
                 worker.terminate()
-                e.source.postMessage({ result: 'OverTime!' }, "*")
-            }, 60 * 1000)//判断超时
+                e.source.postMessage({ result: 'OverTime!',type:'overtime',summit:e.data.fullTest }, "*")
+            }, 1000*10)//判断超时
         };
     </script>
 </head>

@@ -2,7 +2,7 @@
   <div class="footer-wrapper">
     <div class="hr" />
     <div class="flex-wrapper">
-      <p>© 2020 LeetCook网络有限公司版权所有</p>
+      <p>© 2020 LeetCook网络有限公司版没有</p>
       <ul class="footer-menu">
         <li class="menu-item" v-for="item in footerMenu" :key="item">
           <a>{{ item }}</a><span>|</span>

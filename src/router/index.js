@@ -4,6 +4,15 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
+const originalReplace = VueRouter.prototype.replace;
+VueRouter.prototype.replace = function replace(location) {
+  return originalReplace.call(this, location).catch(err => err);
+};
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+
 const routes = [
   {
     path: '/',
@@ -54,8 +63,13 @@ const routes = [
   {
     path: '/problem/:index',
     name: 'Problem',
-    meta: { name: '题目'},
+    meta: { name: '题目' },
     component: () => import('../views/Problem.vue')
+  },
+  {
+    path: '/newProblem',
+    name: 'NewProblem',
+    component: () =>import('../views/NewProblem.vue')
   },
   {
     path: '/premium',

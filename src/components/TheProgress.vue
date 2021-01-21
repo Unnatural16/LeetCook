@@ -2,28 +2,28 @@
   <div class="progress-wrapper">
     <h2 :style="{ 'padding-left': '20px' }">当前进度</h2>
     <div class="progress-inner">
-      <Circle :percent="20" class="circle">
-        45.4%<br />
-        提交通过率
+      <Circle :percent="rate" class="circle">
+        {{rate}}%<br />
+        完成率
       </Circle>
       <div class="pass-rate">
         <div>
           <p class="easy title">简单</p>
-          <p>89</p>
+          <p>{{easySolved}}</p>
           <div class="hr" />
-          <p>524</p>
+          <p>{{easyCount}}</p>
         </div>
         <div>
           <p class="medium title">中等</p>
-          <p>54</p>
+          <p>{{mediumSolved}}</p>
           <div class="hr" />
-          <p>957</p>
+          <p>{{mediumCount}}</p>
         </div>
         <div>
           <p class="hard title">困难</p>
-          <p>11</p>
+          <p>{{hardSolved}}</p>
           <div class="hr" />
-          <p>380</p>
+          <p>{{hardCount}}</p>
         </div>
       </div>
     </div>
@@ -33,6 +33,20 @@
 <script>
 export default {
   name: "TheProgress",
+  props:[
+    'easyCount',
+    'mediumCount',
+    'hardCount',
+    'easySolved',
+    'mediumSolved',
+    'hardSolved',
+  ],
+  computed:{
+    //完成率
+    rate: function(){
+      return ((this.easySolved+this.mediumSolved+this.hardSolved)/(this.easyCount+this.mediumCount+this.hardCount)).toFixed(4)*100
+    }
+  }
 };
 </script>
 

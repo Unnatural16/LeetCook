@@ -5,27 +5,35 @@
         v-model="searchContent"
         placeholder="搜索题目 名称、内容或编号"
         class="input"
+        search
+        @on-search="ChangeFilter($event, 'search')"
       />
       <Icon type="md-document" class="solving-icon" />
-      <Dropdown>
+      <Dropdown
+        @on-click="ChangeFilter($event, 'difficulty')"
+        :style="{ cursor: 'pointer' }"
+      >
         难度
         <Icon type="ios-arrow-down" />
         <DropdownMenu slot="list">
-          <DropdownItem>简单</DropdownItem>
-          <DropdownItem>中等</DropdownItem>
-          <DropdownItem>困难</DropdownItem>
+          <DropdownItem name="easy">简单</DropdownItem>
+          <DropdownItem name="medium">中等</DropdownItem>
+          <DropdownItem name="hard">困难</DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <Dropdown>
+      <Dropdown
+        @on-click="ChangeFilter($event, 'solved')"
+        :style="{ cursor: 'pointer' }"
+      >
         状态
         <Icon type="ios-arrow-down" />
         <DropdownMenu slot="list">
-          <DropdownItem>未做</DropdownItem>
-          <DropdownItem>已解答</DropdownItem>
-          <DropdownItem>尝试过</DropdownItem>
+          <DropdownItem name="unsolved">未做</DropdownItem>
+          <DropdownItem name="solved">已解答</DropdownItem>
+          <DropdownItem name="tried">尝试过</DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <Dropdown>
+      <Dropdown :style="{ cursor: 'pointer' }">
         列表
         <Icon type="ios-arrow-down" />
         <DropdownMenu slot="list">
@@ -37,7 +45,10 @@
           <DropdownItem> 👨‍💻 LeetCode 精选 TOP面试题 </DropdownItem>
         </DropdownMenu>
       </Dropdown>
-      <Dropdown>
+      <Dropdown
+        @on-click="ChangeFilter($event, 'tag')"
+        :style="{ cursor: 'pointer' }"
+      >
         标签
         <Icon type="ios-arrow-down" />
         <DropdownMenu slot="list" class="tag-list">
@@ -47,23 +58,54 @@
         </DropdownMenu>
       </Dropdown>
     </div>
-    <Table stripe :columns="problemsTableHeader" :data="problemsTableData">
-      <template v-slot:name="{row}">
+    <Table
+      stripe
+      :columns="problemsTableHeader"
+      :data="filtedProblemsTableData"
+      :loading="tableLoading"
+    >
+      <template v-slot:solved="{ row }">
+        <Icon
+          type="md-checkmark"
+          color="green"
+          size="24"
+          v-if="
+            userMessage.PassRecord &&
+            userMessage.PassRecord[row.index] == 'solved'
+          "
+        />
+        <Icon
+          type="md-clock"
+          color="orange"
+          size="24"
+          v-if="
+            userMessage.PassRecord &&
+            userMessage.PassRecord[row.index] == 'tried'
+          "
+        />
+      </template>
+      <template v-slot:name="{ row }">
         <router-link :to="{ name: 'Problem', params: { index: row.index } }">{{
           row.name
         }}</router-link>
       </template>
-      <template v-slot:pass-rate="{row}">
-        {{row.passse/row.commits||0}}
+      <template v-slot:pass-rate="{ row }">
+        {{ ((row.passes / row.commits || 0) * 100).toFixed(2) + "%" }}
       </template>
       <template v-slot:frequency>
         <Icon type="md-lock" color="orange" size="24" />
+      </template>
+      <template v-slot:difficulty="{ row }">
+        <Tag color="lime" v-if="(row.difficulty == 'easy')">简单</Tag>
+        <Tag color="orange" v-else-if="(row.difficulty == 'medium')">中等</Tag>
+        <Tag color="red" v-else-if="(row.difficulty == 'hard')">困难</Tag>
       </template>
     </Table>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "TheProblemTable",
   data: function () {
@@ -73,7 +115,7 @@ export default {
       problemsTableHeader: [
         {
           title: " ",
-          key: "is_solved",
+          slot: "solved",
         },
         {
           title: "#",
@@ -84,24 +126,59 @@ export default {
           slot: "name",
         },
         {
-          title: "题解",
-          key: "solved",
+          title: "难度",
+          slot: "difficulty",
         },
         {
           title: "通过率",
-          slot: "pass-rate"
+          slot: "pass-rate",
         },
         {
           title: "出现频率",
           slot: "frequency",
         },
       ],
-      problemsTableData: [],
+      tableLoading: true,
     };
+  },
+  computed: {
+    ...mapState(["userMessage", "problems"]),
+    filtedProblemsTableData: function () {
+      if (this.problems.length==null) {
+        return [];
+      }
+      return this.problems.filter((data) => {
+        if (
+          this.$route.query.search &&
+          data.name.indexOf(this.$route.query.search) == -1
+        ) {
+          return false;
+        }
+        if (
+          this.$route.query.difficulty &&
+          this.$route.query.difficulty != data.difficulty
+        ) {
+          return false;
+        }
+        return true;
+      });
+    },
   },
   created: async function () {
     this.problemsTagList = await this.$GetProblemsTag();
-    this.problemsTableData = await this.$GetProblemsTableData();
+    this.tableLoading = false;
+  },
+  methods: {
+    // eslint-disable-next-line no-unused-vars
+    ChangeFilter: function (value, key) {
+      let query = JSON.parse(JSON.stringify(this.$route.query));
+      if (value == null || value.length == 0) {
+        delete query[key];
+      } else {
+        query[key] = value;
+      }
+      this.$router.push({ query });
+    },
   },
 };
 </script>

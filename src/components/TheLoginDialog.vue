@@ -7,9 +7,9 @@
       <FormItem>
         <i-input placeholder="输入手机号" key>
           <Select slot="prepend" style="width: 80px">
-          <Option value="+86">+86</Option>
-          <Option value="+1">+1</Option>
-        </Select>
+            <Option value="+86">+86</Option>
+            <Option value="+1">+1</Option>
+          </Select>
         </i-input>
       </FormItem>
       <FormItem>
@@ -166,7 +166,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(["ShowLoginDialog","Login"]),
+    ...mapMutations(["ShowLoginDialog", "Login"]),
     handleSubmit: function (name) {
       this.$refs[name].validate(async (valid) => {
         if (valid) {
@@ -176,21 +176,23 @@ export default {
               this.formLogin.password
             );
             if (result) {
-              this.Login(result)
-              this.isOpen=false;
+              this.Login(result);
+              this.isOpen = false;
             } else {
-              this.$Message.error("用户名或密码错误")
+              this.$Message.error("用户名或密码错误");
             }
-          }else if (name == "register"){
-            let result = await this.$Register(
-              this.formRegister.username,
-              this.formRegister.password
-            );
-            if (result) {
-              this.Login(result.username)
-              this.isOpen=false;
-            } else {
-              this.$Message.error("注册失败，请更换用户名")
+          } else if (name == "register") {
+            try {
+              let result = await this.$Register(
+                this.formRegister.username,
+                this.formRegister.password
+              );
+              if (result) {
+                this.Login(result);
+                this.isOpen = false;
+              }
+            } catch (e) {
+              this.$Message.error("账号已注册");
             }
           }
         }
