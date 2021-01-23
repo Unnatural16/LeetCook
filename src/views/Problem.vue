@@ -24,7 +24,7 @@
                 v-for="sample in problemData.samples"
                 :key="sample"
               >
-                {{ sample }}
+                {{sample}}
               </div>
               <div>
                 通过次数 {{ problemData.passes }} | 提交次数

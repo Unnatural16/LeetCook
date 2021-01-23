@@ -1,13 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Common from '../Common.js'
-import createPersistedState from "vuex-persistedstate";
+// import createPersistedState from "vuex-persistedstate";
 
 
 Vue.use(Vuex)
 Vue.use(Common)
 export default new Vuex.Store({
-  plugins:[createPersistedState()],
+  // plugins:[createPersistedState()],
   state: {
     username: '',
     showDialog: false,

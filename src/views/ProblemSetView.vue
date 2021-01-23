@@ -145,10 +145,10 @@ export default {
   computed: {
     ...mapState(["userMessage", "problems"]),
     solved: function () {
-      return this.userMessage.PassRecord.reduce(
+      return Array.isArray(this.userMessage.PassRecord)? this.userMessage.PassRecord.reduce(
         (obj, current, index) => {
           if (current == "solved") {
-            obj[this.problems[index].difficulty]++;
+            obj[this.problems[index]?.difficulty]++;
           }
           return obj;
         },
@@ -158,16 +158,16 @@ export default {
           medium: 0,
           hard: 0,
         }
-      );
+      ):{};
     },
     difficultyCount: function () {
-      return this.problems.reduce(
+      return Array.isArray(this.problems) ? this.problems.reduce(
         (obj, current) => {
-          obj[current]++;
+          obj[current?.difficulty]++;
           return obj;
         },
         { easy: 0, medium: 0, hard: 0 }
-      );
+      ):{};
     },
   },
   created: async function () {
