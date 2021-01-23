@@ -3,13 +3,13 @@
     <template v-slot:left>
       <aside>
         <Tabs type="card" :animated="false" class="tab" v-model="mainTab">
-          <TabPane label="题目描述" name="description">
+          <TabPane label="题目描述" name="description" class="description">
             <div class="tab-inner">
               <h4 class="title">
                 {{ problemData.index + ". " + problemData.name }}
               </h4>
               <div class="second-line">
-                难度 <span ref="difficulty">{{ problemData.difficulty }}</span>
+                难度 <span :style="{color:difficultyColor}">{{ problemData.difficulty }}</span>
                 <Button type="text">
                   <Icon type="md-thumbs-up" />{{ problemData.liked }}</Button
                 >
@@ -26,6 +26,10 @@
               >
                 {{sample}}
               </div>
+              <h4 v-if="tips.length">提示:</h4>
+              <ul style="margin: 0 0 20px 40px">
+                <li v-for="tip in tips" :key="tip">{{tip}}</li>
+              </ul>
               <div>
                 通过次数 {{ problemData.passes }} | 提交次数
                 {{ problemData.commits }}
@@ -53,7 +57,9 @@
           <Button @click="$router.push({ name: 'ProblemSet' })"
             ><Icon type="md-list" />题目列表</Button
           >
-          <Button><Icon type="md-shuffle" />随机一题</Button>
+          <Button 
+            @click="$router.push({ params: { index: Math.floor(Math.random()* $store.state.problems.length) } })">
+            <Icon type="md-shuffle" />随机一题</Button>
           <Button
             @click="
               $router.push({ params: { index: $route.params.index - 1 } })
@@ -190,6 +196,19 @@ export default {
     editor: require("vue2-ace-editor"),
     TheSummitRecord,
   },
+  computed: {
+    tips: function () {
+      return this.problemData.tips?.split('\n')??[]
+    },
+    difficultyColor:function () {
+      let map={
+        easy:'green',
+        medium:'orange',
+        hard:'red'
+      }
+      return map[this.problemData.difficulty]
+    }
+  },
   methods: {
     editorInit: function () {
       require("brace/ext/language_tools"); //language extension prerequsite...
@@ -271,12 +290,6 @@ export default {
       this.$route.params.index
     );
     this.spinTab = false;
-    let tempMap = {
-      easy: "green",
-      medium: "orange",
-      hard: "red",
-    };
-    this.$refs.difficulty.style.color = tempMap[this.problemData.difficulty];
     this.code = this.problemData.template;
     this.testSample = this.problemData.testSample;
     //与iframe通信
@@ -430,6 +443,9 @@ aside {
   .ivu-tabs-tabpane,
   .tab-inner {
     height: 100%;
+  }
+  .description{
+    overflow-y: auto;
   }
 }
 </style>

@@ -3,27 +3,27 @@
     <h2 :style="{ 'padding-left': '20px' }">当前进度</h2>
     <div class="progress-inner">
       <Circle :percent="rate" class="circle">
-        {{rate}}%<br />
+        {{ rate }}%<br />
         完成率
       </Circle>
       <div class="pass-rate">
         <div>
           <p class="easy title">简单</p>
-          <p>{{easySolved}}</p>
+          <p>{{ solvedCount.easy }}</p>
           <div class="hr" />
-          <p>{{easyCount}}</p>
+          <p>{{ difficultyCount.easy }}</p>
         </div>
         <div>
           <p class="medium title">中等</p>
-          <p>{{mediumSolved}}</p>
+          <p>{{ solvedCount.medium }}</p>
           <div class="hr" />
-          <p>{{mediumCount}}</p>
+          <p>{{ difficultyCount.medium }}</p>
         </div>
         <div>
           <p class="hard title">困难</p>
-          <p>{{hardSolved}}</p>
+          <p>{{ solvedCount.hard }}</p>
           <div class="hr" />
-          <p>{{hardCount}}</p>
+          <p>{{ difficultyCount.hard }}</p>
         </div>
       </div>
     </div>
@@ -33,20 +33,17 @@
 <script>
 export default {
   name: "TheProgress",
-  props:[
-    'easyCount',
-    'mediumCount',
-    'hardCount',
-    'easySolved',
-    'mediumSolved',
-    'hardSolved',
-  ],
-  computed:{
+  props: ["difficultyCount", "solvedCount"],
+  computed: {
     //完成率
-    rate: function(){
-      return ((this.easySolved+this.mediumSolved+this.hardSolved)/(this.easyCount+this.mediumCount+this.hardCount)).toFixed(4)*100
-    }
-  }
+    rate: function () {
+      return (
+        (
+          (this.solvedCount.all || 0) / (this.difficultyCount.all || Infinity)
+        ).toFixed(4) * 100
+      );
+    },
+  },
 };
 </script>
 
@@ -58,15 +55,15 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  margin-top:10px;
+  margin-top: 10px;
   .circle {
-      width:100px!important;
-      height: 100px!important;
+    width: 100px !important;
+    height: 100px !important;
   }
 }
 .pass-rate {
   display: flex;
-  gap:10px;
+  gap: 10px;
   text-align: space-between;
   justify-content: center;
   .easy {

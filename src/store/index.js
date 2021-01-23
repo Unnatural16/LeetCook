@@ -21,19 +21,11 @@ export default new Vuex.Store({
     ShowLoginDialog: function (state, boolean) {
       state.showDialog = boolean
     },
-    GetUserMessage: function (state, message) {
+    MutateUserMessage: function (state, message) {
       state.userMessage = message
     },
-    GetProblems:function (state, problems) {
+    MutateProblems:function (state, problems) {
       state.problems = problems
-    }
-  },
-  actions: {
-    GetUserMessageAsync: async function ({ commit }) {
-      commit('GetUserMessage', await Vue.prototype.$GetUserMessage())
-    },
-    GetProblemsAsync: async function ({ commit }) {
-      commit('GetProblems', await Vue.prototype.$GetProblems())
     }
   },
   modules: {

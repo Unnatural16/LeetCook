@@ -60,6 +60,14 @@
                 placeholder="输入默认测试用例"
               ></i-input>
             </FormItem>
+            <FormItem label="提示">
+              <i-input
+                v-model="formItem.tips"
+                type="textarea"
+                :autosize="{ minRows: 2, maxRows: 5 }"
+                placeholder="输入提示，以回车键分隔"
+              ></i-input>
+            </FormItem>
           </i-col>
           <i-col span="10">
             <FormItem label="函数名字" prop="funcName">
@@ -156,6 +164,7 @@ export default {
         func: "",
         args: [],
         template: "",
+        tips:""
       },
       formValidate: {
         name: [
@@ -285,6 +294,7 @@ export default {
     this.formItem.func = data.func;
     this.formItem.template = data.template;
     this.formItem.samples = data.samples;
+    this.formItem.tips = data.tips;
     // this.formItem.testSamples=data.testSamples
     this.formItem.args = data.args.map((arg) => ({ value: arg }));
     for (let testSample of data.testSamples) {

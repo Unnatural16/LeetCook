@@ -24,7 +24,7 @@
       <div class="hr" />
       <div class="tag-bar">
         <Tag color="primary"
-          >已解决{{ solved["all"] + "/" + problems.length }}</Tag
+          >已解决{{ solvedCount["all"] + "/" + problems.length }}</Tag
         >-
         <Tag color="success">简单{{ difficultyCount["easy"] }}</Tag>
         <Tag color="warning">中等{{ difficultyCount["medium"] }}</Tag>
@@ -47,14 +47,8 @@
       />
       <TheCalendar />
       <TheProgress
-        v-bind="{
-          easyCount: difficultyCount['easy'],
-          mediumCount: difficultyCount['medium'],
-          hardCount: difficultyCount['hard'],
-          easySolved: solved['easy'],
-          mediumSolved: solved['medium'],
-          hardSolved: solved['hard'],
-        }"
+        :difficultyCount="difficultyCount"
+        :solvedCount="solvedCount"
       />
       <List>
         <template v-slot:header>
@@ -144,30 +138,34 @@ export default {
   },
   computed: {
     ...mapState(["userMessage", "problems"]),
-    solved: function () {
-      return Array.isArray(this.userMessage.PassRecord)? this.userMessage.PassRecord.reduce(
-        (obj, current, index) => {
-          if (current == "solved") {
-            obj[this.problems[index]?.difficulty]++;
-          }
-          return obj;
-        },
-        {
-          all: this.userMessage.PassRecord.length,
-          easy: 0,
-          medium: 0,
-          hard: 0,
-        }
-      ):{};
+    solvedCount: function () {
+      return Array.isArray(this.userMessage.PassRecord)
+        ? this.userMessage.PassRecord.reduce(
+            (obj, current, index) => {
+              if (current == "solved") {
+                obj[this.problems[index]?.difficulty]++;
+              }
+              return obj;
+            },
+            {
+              all: this.userMessage.PassRecord.length,
+              easy: 0,
+              medium: 0,
+              hard: 0,
+            }
+          )
+        : {};
     },
     difficultyCount: function () {
-      return Array.isArray(this.problems) ? this.problems.reduce(
-        (obj, current) => {
-          obj[current?.difficulty]++;
-          return obj;
-        },
-        { easy: 0, medium: 0, hard: 0 }
-      ):{};
+      return Array.isArray(this.problems)
+        ? this.problems.reduce(
+            (obj, current) => {
+              obj[current?.difficulty]++;
+              return obj;
+            },
+            { easy: 0, medium: 0, hard: 0, all: this.problems.length }
+          )
+        : {};
     },
   },
   created: async function () {

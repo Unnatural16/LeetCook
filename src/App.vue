@@ -11,7 +11,7 @@
 import TheNavagator from "@/components/TheNavagator";
 import TheFooter from "@/components/TheFooter";
 import TheLoginDialog from "@/components/TheLoginDialog";
-import { mapMutations, mapActions } from "vuex";
+import { mapMutations } from "vuex";
 export default {
   name: "app",
   components: {
@@ -20,15 +20,11 @@ export default {
     TheLoginDialog,
   },
   methods: {
-    ...mapMutations(["Login"]),
-    ...mapActions(["GetUserMessageAsync", "GetProblemsAsync"]),
+    ...mapMutations(["Login","MutateProblems"]),
   },
   created: async function () {
-    await this.$Account();
-    if (this.$store.state.username) {
-      await this.GetUserMessageAsync(); //在根组件中获取最新消息
-    }
-    await this.GetProblemsAsync();
+    await this.$Account();//如果session未过期，则登录
+    this.MutateProblems(await this.$GetProblems())
   },
 };
 </script>

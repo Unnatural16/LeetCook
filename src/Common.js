@@ -21,17 +21,27 @@ exports.install = function (Vue) {
     Vue.prototype.$GetProblemData = async function (index) {
         return (await axios.get(host + '/api/problems/' + index)).data
     }
+
+    //登录系列api
+
+    Vue.prototype.$GetUserMessage = async function () {
+        return (await axios.get(host + '/api/GetUserMessage')).data;
+    }
     Vue.prototype.$Account = async function () {
-        this.$store.commit('Login', (await axios.get(host + '/api/account')).data)
+        try{
+            this.$store.commit('Login', (await axios.get(host + '/api/account')).data)
+            this.$store.commit('MutateUserMessage', await this.$GetUserMessage())
+        // eslint-disable-next-line no-empty
+        }catch{}
     }
     Vue.prototype.$Login = async function (username, password) {
         try {
             await axios.post(host + '/api/login', { username, password })
             this.$store.commit('Login', username);
+            this.$store.commit('MutateUserMessage', await this.$GetUserMessage())
         } catch (e) {
             this.$store.commit('Login', '');
         }
-
     }
     Vue.prototype.$Register = async function (username, password) {
         return (await axios.post(host + '/api/register', { username, password })).data
@@ -39,6 +49,7 @@ exports.install = function (Vue) {
     Vue.prototype.$Logout = async function () {
         await axios.post(host + '/api/logout')
         this.$store.commit('Login', '');
+        this.$store.commit('MutateUserMessage', {})
     }
     Vue.prototype.$SummitProblem = async function (index, cost) { //发送题目序号和时间花费,返回值是超越了多少百分比的人
         return (await axios.post(host + '/api/SummitProblem', { index, cost })).data
@@ -48,9 +59,9 @@ exports.install = function (Vue) {
             return (await axios.get(host + '/api/GetSummitRecord', { params: { index } })).data.reverse();
         }
     }
-    Vue.prototype.$GetUserMessage = async function () {
-        return (await axios.get(host + '/api/GetUserMessage')).data;
-    }
+    
+
+
     //返回题目序号
     Vue.prototype.$PostProblem = async function (data) {
         if (data.index == null) {
