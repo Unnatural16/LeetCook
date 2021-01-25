@@ -135,6 +135,19 @@
               >添加测试用例</Button
             >
           </FormItem>
+          <FormItem>
+            <Upload
+              type="drag"
+              accept=".json"
+              :format="['json']"
+              icon="md-cloud-upload"
+              :before-upload="handleUpload"
+              action
+              show-upload-list
+            >
+              上传测试用例
+            </Upload>
+          </FormItem>
         </TabPane>
       </Tabs>
       <i-col span="24">
@@ -153,6 +166,7 @@ export default {
   name: "NewProblem",
   data() {
     return {
+      file:[],
       formItem: {
         name: "",
         difficulty: "",
@@ -164,7 +178,7 @@ export default {
         func: "",
         args: [],
         template: "",
-        tips:""
+        tips: "",
       },
       formValidate: {
         name: [
@@ -247,6 +261,15 @@ export default {
         template: "",
       };
     },
+    handleUpload: function (file) {
+      let fileReader = new FileReader();
+      fileReader.readAsText(file, "UTF-8");
+      let that=this;
+      fileReader.onload = function (e) {
+        that.file = JSON.parse(e.target.result);
+      };
+      return false;
+    },
     SummitProblem: async function () {
       try {
         let flag = false;
@@ -273,6 +296,9 @@ export default {
             result[j] = this.$argsTransformMap[data.args[j]](args[j]);
           }
           data.testSamples[i] = result;
+        }
+        if (Array.isArray(this.file)) {
+          data.testSamples.push(...this.file);
         }
         let index = await this.$PostProblem(data);
         this.$router.replace({ name: "Problem", params: { index } });

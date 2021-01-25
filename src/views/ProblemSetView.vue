@@ -144,11 +144,12 @@ export default {
             (obj, current, index) => {
               if (current == "solved") {
                 obj[this.problems[index]?.difficulty]++;
+                obj.all++
               }
               return obj;
             },
             {
-              all: this.userMessage.PassRecord.length,
+              all: 0,
               easy: 0,
               medium: 0,
               hard: 0,

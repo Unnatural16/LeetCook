@@ -9,7 +9,10 @@
                 {{ problemData.index + ". " + problemData.name }}
               </h4>
               <div class="second-line">
-                难度 <span :style="{color:difficultyColor}">{{ problemData.difficulty }}</span>
+                难度
+                <span :style="{ color: difficultyColor }">{{
+                  problemData.difficulty
+                }}</span>
                 <Button type="text">
                   <Icon type="md-thumbs-up" />{{ problemData.liked }}</Button
                 >
@@ -23,12 +26,11 @@
                 class="sample"
                 v-for="sample in problemData.samples"
                 :key="sample"
-              >
-                {{sample}}
+              >{{sample}}
               </div>
               <h4 v-if="tips.length">提示:</h4>
               <ul style="margin: 0 0 20px 40px">
-                <li v-for="tip in tips" :key="tip">{{tip}}</li>
+                <li v-for="tip in tips" :key="tip">{{ tip }}</li>
               </ul>
               <div>
                 通过次数 {{ problemData.passes }} | 提交次数
@@ -57,9 +59,19 @@
           <Button @click="$router.push({ name: 'ProblemSet' })"
             ><Icon type="md-list" />题目列表</Button
           >
-          <Button 
-            @click="$router.push({ params: { index: Math.floor(Math.random()* $store.state.problems.length) } })">
-            <Icon type="md-shuffle" />随机一题</Button>
+          <Button
+            @click="
+              $router.push({
+                params: {
+                  index: Math.floor(
+                    Math.random() * $store.state.problems.length
+                  ),
+                },
+              })
+            "
+          >
+            <Icon type="md-shuffle" />随机一题</Button
+          >
           <Button
             @click="
               $router.push({ params: { index: $route.params.index - 1 } })
@@ -198,16 +210,16 @@ export default {
   },
   computed: {
     tips: function () {
-      return this.problemData.tips?.split('\n')??[]
+      return this.problemData.tips?.split("\n") ?? [];
     },
-    difficultyColor:function () {
-      let map={
-        easy:'green',
-        medium:'orange',
-        hard:'red'
-      }
-      return map[this.problemData.difficulty]
-    }
+    difficultyColor: function () {
+      let map = {
+        easy: "green",
+        medium: "orange",
+        hard: "red",
+      };
+      return map[this.problemData.difficulty];
+    },
   },
   methods: {
     editorInit: function () {
@@ -252,7 +264,7 @@ export default {
     //按参数列表类型将字符串序列化
     argsTransform: function (args, type) {
       args = args.split("\n");
-      for (let i = 0; i < args.length; i++) {
+      for (let i = 0; i < type.length; i++) {
         args[i] = this.$argsTransformMap[type[i]](args[i]);
       }
       return args;
@@ -264,12 +276,18 @@ export default {
       });
     },
     deleteProblem: async function () {
-      try {
-        this.$DeleteProblem(this.$route.params.index);
-        this.$router.replace({ name: "ProblemSet" });
-      } catch (e) {
-        this.$Message.error(e);
-      }
+      this.$Modal.confirm({
+        title: "警告",
+        content: "是否要删除此题目？此操作不可还原",
+        onOk: function () {
+          try {
+            this.$DeleteProblem(this.$route.params.index);
+            this.$router.replace({ name: "ProblemSet" });
+          } catch (e) {
+            this.$Message.error(e);
+          }
+        },
+      });
     },
   },
   beforeRouteUpdate: async function (to, from, next) {
@@ -429,6 +447,7 @@ aside {
     background: rgb(230, 230, 230);
     padding: 5px;
     width: calc(100% - 100px);
+    word-break: break-all;
   }
 }
 </style>
@@ -444,7 +463,7 @@ aside {
   .tab-inner {
     height: 100%;
   }
-  .description{
+  .description {
     overflow-y: auto;
   }
 }
