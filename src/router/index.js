@@ -74,6 +74,8 @@ const routes = [
     beforeEnter: function (to, from, next) {
       if (store.state.userMessage.auth) {
         next();
+      } else {
+        next('/problemset/all');
       }
     }
   },
@@ -97,7 +99,14 @@ const routes = [
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
+  routes,
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.name!='App'&&navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)) {
+    next('/app');
+  } else {
+    next()
+  }
+})
 export default router
