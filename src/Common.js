@@ -3,6 +3,7 @@ const host = 'http://localhost:8080'
 //此文件定义了全局变量、方法和api,同时模拟后台发送的数据
 //以后将会实现与后台联动
 exports.install = function (Vue) {
+    //问题系列apu
     Vue.prototype.$GetProblemsTag = async function () {
         return problems_tag
     };
@@ -23,16 +24,15 @@ exports.install = function (Vue) {
     }
 
     //登录系列api
-
     Vue.prototype.$GetUserMessage = async function () {
         return (await axios.get(host + '/api/GetUserMessage')).data;
     }
     Vue.prototype.$Account = async function () {
-        try{
+        try {
             this.$store.commit('Login', (await axios.get(host + '/api/account')).data)
             this.$store.commit('MutateUserMessage', await this.$GetUserMessage())
-        // eslint-disable-next-line no-empty
-        }catch{}
+            // eslint-disable-next-line no-empty
+        } catch { }
     }
     Vue.prototype.$Login = async function (username, password) {
         try {
@@ -51,6 +51,8 @@ exports.install = function (Vue) {
         this.$store.commit('Login', '');
         this.$store.commit('MutateUserMessage', {})
     }
+
+    //问题系列api
     Vue.prototype.$SummitProblem = async function (index, cost) { //发送题目序号和时间花费,返回值是超越了多少百分比的人
         return (await axios.post(host + '/api/SummitProblem', { index, cost })).data
     }
@@ -59,10 +61,18 @@ exports.install = function (Vue) {
             return (await axios.get(host + '/api/GetSummitRecord', { params: { index } })).data.reverse();
         }
     }
-    
+    Vue.prototype.$like = async function (index, isLike) { //发送题目序号,以及点赞或取消点赞
+        return (await axios.post(host + '/api/like/' + index, { isLike })).data
+    }
+    Vue.prototype.$favorite = async function (index, isFavorite) {
+        return (await axios.post(host + '/api/favorite/' + index, { isFavorite })).data
+    }
+    Vue.prototype.$comment = async function (index, data) {
+        return (await axios.post(host + '/api/comment/' + index, data)).data
+    }
 
 
-    //返回题目序号
+    //编辑问题系列api
     Vue.prototype.$PostProblem = async function (data) {
         if (data.index == null) {
             return (await axios.post(host + '/api/CreateProblem', data)).data;
@@ -89,6 +99,22 @@ exports.install = function (Vue) {
         Numbers: (array) => '[' + array.map(Number).join(',') + ']',
         Strings: (array) => '[' + array.map(String).join(',') + ']',
         Booleans: (array) => '[' + array.map(Boolean).join(',') + ']',
+    }
+    //根据日期渲染时间
+    Vue.prototype.$RenderTime = function (date) {
+        date = new Date(date);
+        let ms = (new Date() - date) / 1000;
+        if (ms < 1) {
+            return "刚刚";
+        } else if (ms < 60) {
+            return Math.round(ms) + "秒前";
+        } else if (ms < 60 * 60) {
+            return Math.round(ms / 60) + "分钟前";
+        } else if (ms < 60 * 60 * 24) {
+            return Math.round(ms / 3600) + "小时前";
+        } else {
+            return date.toLocaleDateString();
+        }
     }
 };
 const problems_tag = ['栈', '堆', '贪心算法'

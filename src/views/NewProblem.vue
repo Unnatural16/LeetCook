@@ -92,6 +92,12 @@
                 placeholder="输入代码"
               ></i-input>
             </FormItem>
+            <FormItem label="标签">
+              <i-input
+                v-model="formItem.tags"
+                placeholder="输入标签，以逗号分隔"
+              ></i-input>
+            </FormItem>
           </i-col>
         </TabPane>
         <TabPane label="测试用例">
@@ -259,6 +265,7 @@ export default {
         func: "",
         args: [],
         template: "",
+        tags:""
       };
     },
     handleUpload: function (file) {
@@ -284,6 +291,7 @@ export default {
           //如果是编辑（有index），则加上
           data.index = this.$route.query.index;
         }
+        data.tags=data.tags.split(",").filter((tag)=>tag.trim().length>0);//将标签解析为数组
         for (let i = 0; i < data.args.length; i++) {
           //将对象数组还原为数组
           data.args[i] = data.args[i].value;
@@ -297,7 +305,7 @@ export default {
           }
           data.testSamples[i] = result;
         }
-        if (Array.isArray(this.file)) {
+        if (this.file.length > 0) {
           data.testSamples.push(...this.file);
         }
         let index = await this.$PostProblem(data);
@@ -321,6 +329,7 @@ export default {
     this.formItem.template = data.template;
     this.formItem.samples = data.samples;
     this.formItem.tips = data.tips;
+    this.formItem.tags = data.tags.join(',');
     // this.formItem.testSamples=data.testSamples
     this.formItem.args = data.args.map((arg) => ({ value: arg }));
     for (let testSample of data.testSamples) {

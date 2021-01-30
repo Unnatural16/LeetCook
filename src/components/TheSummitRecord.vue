@@ -33,7 +33,7 @@
         <Tag color="red" v-else>失败</Tag>
       </template>
       <template v-slot:SummitTime="{ row }">
-        {{ RenderTime(row.SummitTime) }}
+        {{ $RenderTime(row.SummitTime) }}
       </template>
       <template v-slot:ProgramCost="{ row }">
         {{ RenderCost(row.ProgramCost) }}
@@ -89,21 +89,6 @@ export default {
     };
   },
   methods: {
-    RenderTime: function (date) {
-      date = new Date(date);
-      let ms = (new Date() - date) / 1000;
-      if (ms < 1) {
-        return "刚刚";
-      } else if (ms < 60) {
-        return Math.round(ms) + "秒前";
-      } else if (ms < 60 * 60) {
-        return Math.round(ms / 60) + "分钟前";
-      } else if (ms < 60 * 60 * 24) {
-        return Math.round(ms / 3600) + "小时前";
-      } else {
-        return date.toLocaleDateString();
-      }
-    },
     RenderCost: function (cost) {
       if (cost == null) {
         return "";

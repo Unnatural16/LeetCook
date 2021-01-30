@@ -13,12 +13,19 @@
                 <span :style="{ color: difficultyColor }">{{
                   problemData.difficulty
                 }}</span>
-                <Button type="text">
-                  <Icon type="md-thumbs-up" />{{ problemData.liked }}</Button
-                >
-                <Button type="text"><Icon type="md-star-outline" />收藏</Button>
+                <div class="like-favorite-button" @click="like(!liked)">
+                  <Icon
+                    :type="liked ? 'ios-thumbs-up' : 'ios-thumbs-up-outline'"
+                  />{{ problemData.liked }}
+                </div>
+                <div class="like-favorite-button" @click="favorite(!favorited)">
+                  <Icon :type="favorited ? 'md-star' : 'md-star-outline'" />收藏
+                </div>
                 <Button type="text"><Icon type="md-share" />分享</Button>
               </div>
+              <Tag color="blue" v-for="tag in problemData.tags" :key="tag">{{
+                tag
+              }}</Tag>
               <Divider />
               <div class="description">{{ problemData.description }}</div>
               <h4>示例:</h4>
@@ -26,7 +33,8 @@
                 class="sample"
                 v-for="sample in problemData.samples"
                 :key="sample"
-              >{{sample}}
+              >
+                {{ sample }}
               </div>
               <h4 v-if="tips.length">提示:</h4>
               <ul style="margin: 0 0 20px 40px">
@@ -36,15 +44,17 @@
                 通过次数 {{ problemData.passes }} | 提交次数
                 {{ problemData.commits }}
               </div>
-              <div class="question">
+              <!-- <div class="question">
                 在真实的Cook中遇到过这道题？<Button size="small">是</Button
                 ><Button size="small">否</Button>
-              </div>
+              </div> -->
               <Divider />
               <div>力厨(LeetCook)版权没有</div>
             </div>
           </TabPane>
-          <TabPane label="评论" disabled>评论区(待完成)</TabPane>
+          <TabPane label="评论">
+            <CommentComp @on-comment="comment" :commentList="problemData.comments"/>
+          </TabPane>
           <TabPane label="题解" disabled>题解(待完成)</TabPane>
           <TabPane label="提交记录" name="record">
             <TheSummitRecord
@@ -94,15 +104,18 @@
             <Option key="javascript" value="Javascript">Javascript</Option>
             <Option key="vanillaJs" value="VanillaJs">VanillaJs</Option>
           </Select>
-          <span style="color: green"><Icon type="md-timer" />模拟面试</span>
-          <span @click="code = problemData.template">
-            <Icon type="md-return-left" />还原模板</span
+          <a @click="code = problemData.template" class="small-button">
+            <Icon type="md-return-left" />还原模板</a
           >
-          <span @click="editProblem" v-if="$store.state.userMessage.auth">
-            <Icon type="md-construct" />编辑题目</span
+          <a @click="editProblem" v-if="userMessage.admin" class="small-button">
+            <Icon type="md-construct" />编辑题目</a
           >
-          <span @click="deleteProblem" v-if="$store.state.userMessage.auth">
-            <Icon type="md-construct" />删除题目</span
+          <a
+            @click="deleteProblem"
+            v-if="userMessage.admin"
+            class="small-button"
+          >
+            <Icon type="md-construct" />删除题目</a
           >
         </nav>
         <div class="main-coder">
@@ -126,7 +139,7 @@
               type="textarea"
               :rows="5"
               placeholder="输入测试用例"
-              :style="{ padding: '10px' }"
+              class="test-input"
             />
           </TabPane>
           <TabPane label="代码执行结果" name="result">
@@ -172,7 +185,8 @@
 
 <script>
 import TheSummitRecord from "../components/TheSummitRecord";
-// import {mapState} from 'vuex';
+import { mapState, mapMutations } from "vuex";
+import CommentComp from "../components/CommentComp";
 
 export default {
   name: "Problem",
@@ -207,8 +221,10 @@ export default {
   components: {
     editor: require("vue2-ace-editor"),
     TheSummitRecord,
+    CommentComp,
   },
   computed: {
+    ...mapState(["userMessage", "username"]),
     tips: function () {
       return this.problemData.tips?.split("\n") ?? [];
     },
@@ -220,8 +236,15 @@ export default {
       };
       return map[this.problemData.difficulty];
     },
+    liked: function () {
+      return this.userMessage.liked?.includes(this.problemData.index);
+    },
+    favorited: function () {
+      return this.userMessage.favorite?.includes(this.problemData.index);
+    },
   },
   methods: {
+    ...mapMutations(["LikeProblem", "FavoriteProblem"]),
     editorInit: function () {
       require("brace/ext/language_tools"); //language extension prerequsite...
       require("brace/mode/javascript"); //language
@@ -272,7 +295,7 @@ export default {
     editProblem: function () {
       this.$router.push({
         name: "NewProblem",
-        query: { index: this.$route.params.index },
+        query: { index: this.problemData.index },
       });
     },
     deleteProblem: async function () {
@@ -281,7 +304,7 @@ export default {
         content: "是否要删除此题目？此操作不可还原",
         onOk: function () {
           try {
-            this.$DeleteProblem(this.$route.params.index);
+            this.$DeleteProblem(this.problemData.index);
             this.$router.replace({ name: "ProblemSet" });
           } catch (e) {
             this.$Message.error(e);
@@ -289,6 +312,20 @@ export default {
         },
       });
     },
+    like: async function (isLike) {
+      if (this.username == null) return;
+      this.problemData.liked += isLike ? 1 : -1;
+      this.LikeProblem({ isLike, index: this.problemData.index });
+      await this.$like(this.problemData.index, isLike);
+    },
+    favorite: async function (isFavorite) {
+      if (this.username == null) return;
+      this.FavoriteProblem({ isFavorite, index: this.problemData.index });
+      await this.$favorite(this.problemData.index, isFavorite);
+    },
+    comment:async function (data){
+      await this.$comment(this.$route.params.index,data);
+    }
   },
   beforeRouteUpdate: async function (to, from, next) {
     this.spinTab = true;
@@ -395,11 +432,10 @@ aside {
     margin-bottom: 60px;
     white-space: pre-wrap;
   }
-  .question {
-    margin: 10px 0;
-    button {
-      margin: 0 10px;
-    }
+  .like-favorite-button {
+    display: inline-block;
+    margin: 0 20px;
+    cursor: pointer;
   }
 }
 //代码控制台部分
@@ -415,6 +451,18 @@ aside {
   }
   span {
     cursor: pointer;
+  }
+  .small-button {
+    font-size: 16px;
+    color: gray;
+    transition: background 0.2s;
+    transition: color 0.5s;
+    &:active {
+      background: rgb(204, 204, 204);
+    }
+    &:hover {
+      color: black;
+    }
   }
 }
 .pending {
@@ -465,6 +513,12 @@ aside {
   }
   .description {
     overflow-y: auto;
+  }
+  .test-input {
+    padding: 10px;
+    textarea {
+      resize: none !important;
+    }
   }
 }
 </style>

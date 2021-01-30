@@ -8,7 +8,9 @@
         search
         @on-search="ChangeFilter($event, 'search')"
       />
-      <Icon type="md-document" class="solving-icon" />
+      <router-link :to="{}">
+        <Icon type="md-document" class="solving-icon" />重设
+      </router-link>
       <Dropdown
         @on-click="ChangeFilter($event, 'difficulty')"
         :style="{ cursor: 'pointer' }"
@@ -51,8 +53,8 @@
       >
         标签
         <Icon type="ios-arrow-down" />
-        <DropdownMenu slot="list" class="tag-list">
-          <DropdownItem v-for="item in problemsTagList" :key="item">{{
+        <DropdownMenu slot="list">
+          <DropdownItem v-for="item in problemsTagList" :key="item" :name="item">{{
             item
           }}</DropdownItem>
         </DropdownMenu>
@@ -96,9 +98,9 @@
         <Icon type="md-lock" color="orange" size="24" />
       </template>
       <template v-slot:difficulty="{ row }">
-        <Tag color="lime" v-if="(row.difficulty == 'easy')">简单</Tag>
-        <Tag color="orange" v-else-if="(row.difficulty == 'medium')">中等</Tag>
-        <Tag color="red" v-else-if="(row.difficulty == 'hard')">困难</Tag>
+        <Tag color="lime" v-if="row.difficulty == 'easy'">简单</Tag>
+        <Tag color="orange" v-else-if="row.difficulty == 'medium'">中等</Tag>
+        <Tag color="red" v-else-if="row.difficulty == 'hard'">困难</Tag>
       </template>
     </Table>
   </div>
@@ -111,7 +113,6 @@ export default {
   data: function () {
     return {
       searchContent: "",
-      problemsTagList: [],
       problemsTableHeader: [
         {
           title: " ",
@@ -138,35 +139,51 @@ export default {
           slot: "frequency",
         },
       ],
-      tableLoading: true,
+      tableLoading: false,
     };
   },
   computed: {
     ...mapState(["userMessage", "problems"]),
+    problemsTagList:function () {
+      return Array.isArray(this.problems)? this.problems.reduce((total,current)=>{
+        if(Array.isArray(current.tags)){
+          for(let tag of current.tags){
+            total.add(tag)
+          }
+        }
+        return total;
+      },new Set()):[]
+    },
     filtedProblemsTableData: function () {
-      if (this.problems.length==null) {
+      if (!Array.isArray(this.problems)) {
         return [];
       }
       return this.problems.filter((data) => {
-        if (
-          this.$route.query.search &&
-          data.name.indexOf(this.$route.query.search) == -1
+        const query = this.$route.query;
+        const PassRecord = this.userMessage?.PassRecord?.[data.index];
+        const type = this.$route.params.type;
+        if (type != "all" && type != "algorithms") {//上面的按钮
+          return false;
+        }
+        if (query.search && !data.name.includes(query.search)) {//搜索框
+          return false;
+        }
+        if (query.difficulty && query.difficulty != data.difficulty) {//难度
+          return false;
+        }
+        if (//状态
+          query.solved &&
+          query.solved != PassRecord &&
+          (query.solved != "unsolved" || PassRecord != null)
         ) {
           return false;
         }
-        if (
-          this.$route.query.difficulty &&
-          this.$route.query.difficulty != data.difficulty
-        ) {
-          return false;
+        if(query.tag&&!data.tags.includes(query.tag)){
+          return false
         }
         return true;
       });
     },
-  },
-  created: async function () {
-    this.problemsTagList = await this.$GetProblemsTag();
-    this.tableLoading = false;
   },
   methods: {
     // eslint-disable-next-line no-unused-vars
@@ -187,21 +204,6 @@ export default {
 .tag-list {
   height: 500px;
   overflow-y: scroll;
-}
-.solving-icon:hover {
-  position: relative;
-  &::after {
-    content: "题解";
-    position: absolute;
-    background: white;
-    border-radius: 4px;
-    padding: 10px;
-    width: 60px;
-    transform: translate(-35%, -120%);
-    top: 0;
-    left: 0;
-    box-shadow: 0 0 5px;
-  }
 }
 .table-setter {
   padding: 10px;

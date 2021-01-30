@@ -24,12 +24,23 @@
       <div class="hr" />
       <div class="tag-bar">
         <Tag color="primary"
-          >已解决{{ solvedCount["all"] + "/" + problems.length }}</Tag
+          >已解决{{ solvedCount["all"] || 0 + "/" + problems.length }}</Tag
         >-
         <Tag color="success">简单{{ difficultyCount["easy"] }}</Tag>
         <Tag color="warning">中等{{ difficultyCount["medium"] }}</Tag>
         <Tag color="error">困难{{ difficultyCount["hard"] }}</Tag>
-        <Button><Icon type="md-create" />随机开始</Button>
+        <Button
+          @click="
+            $router.push({
+              name: 'Problem',
+              params: {
+                index: Math.floor(Math.random() * $store.state.problems.length),
+              },
+            })
+          "
+        >
+          <Icon type="md-create" />随机开始</Button
+        >
       </div>
       <div class="hr" />
       <TheProblemTable />
@@ -144,7 +155,7 @@ export default {
             (obj, current, index) => {
               if (current == "solved") {
                 obj[this.problems[index]?.difficulty]++;
-                obj.all++
+                obj.all++;
               }
               return obj;
             },

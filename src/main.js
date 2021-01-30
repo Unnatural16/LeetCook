@@ -4,7 +4,6 @@ import router from './router'
 import store from './store'
 import './plugins/iview.js'
 import Common from './Common.js'
-
 Vue.config.productionTip = false
 Vue.use(Common)
 new Vue({

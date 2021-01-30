@@ -12,7 +12,7 @@ const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
 }
-
+let firstOpen=true;
 const routes = [
   {
     path: '/',
@@ -72,7 +72,7 @@ const routes = [
     meta: { name: '提交问题' },
     component: () => import('../views/NewProblem.vue'),
     beforeEnter: function (to, from, next) {
-      if (store.state.userMessage.auth) {
+      if (store.state.userMessage.admin) {
         next();
       } else {
         next('/problemset/all');
@@ -103,8 +103,9 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.name!='App'&&navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)) {
+  if (firstOpen&&to.name!='App'&&navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)) {
     next('/app');
+    firstOpen=false;
   } else {
     next()
   }

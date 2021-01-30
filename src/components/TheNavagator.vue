@@ -46,9 +46,21 @@
         </li>
         <li>
           <Dropdown
-            ><a> <Icon type="md-folder-open" /></a>
+            ><a> <Icon type="md-folder-open" />收藏夹</a>
             <DropdownMenu slot="list">
-              <DropdownItem>新建Playground</DropdownItem>
+              <DropdownItem
+                v-for="favoriteProblem in userMessage.favorite"
+                :key="favoriteProblem"
+              >
+                <router-link
+                  :to="{ name: 'Problem', params: { index: favoriteProblem } }"
+                  >{{
+                    problems[favoriteProblem]
+                      ? problems[favoriteProblem].name
+                      : ""
+                  }}</router-link
+                >
+              </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </li>
@@ -79,7 +91,7 @@ export default {
   name: "TheNavagator",
   components: {},
   computed: {
-    ...mapState(["username"]),
+    ...mapState(["username", "userMessage", "problems"]),
   },
   methods: {
     ...mapMutations(["ShowLoginDialog", "Login"]),
