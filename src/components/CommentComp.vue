@@ -1,40 +1,10 @@
 <template>
-  <div style="background: white">
-    <List item-layout="vertical" size="small" :split="false">
-      <ListItem v-for="item in commentTree" :key="item.index">
-        <ListItem>
-          <Avatar size="small" :src="item.avatar" icon="ios-person"></Avatar
-          >&nbsp;<span style="color: #2d9aff">{{ item.username }}</span>
-          <li style="margin-left: 26px">{{ item.content }}</li>
-          <template slot="action">
-            <li>
-              <Icon type="ios-calendar-outline" />
-              {{ $RenderTime(item.createTime) }}
-            </li>
-            <li>
-              <span @click="showCommentInput(item, item)"
-                ><Icon type="ios-chatbubbles-outline" /> 回复</span
-              >
-            </li>
-          </template>
-        </ListItem>
-
-        <div v-if="item.replyComments" class="reply">
-          <CommentReplyComp
-            :replyComment="item.replyComments"
-            :parentComment="item"
-            @showCommentInput="showCommentInput"
-          ></CommentReplyComp>
-        </div>
-        <Divider />
-      </ListItem>
-    </List>
-
-    <div>
+  <div>
+    <div v-if="root">
       <i-input
         v-model="inputComment"
         type="textarea"
-        :rows="3"
+        :autosize="{ minRows: 3, maxRows: 5 }"
         :placeholder="placeholders"
       >
       </i-input>
@@ -43,64 +13,65 @@
         <Button type="primary" round @click="commitComment">确定</Button>
       </div>
     </div>
+    <List item-layout="vertical" size="small" :split="false">
+      <ListItem v-for="item in comments" :key="item._id">
+        <ListItem>
+          <Avatar size="small" :src="item.avatar" icon="ios-person"></Avatar
+          >&nbsp;<span style="color: #2d9aff">{{ item.username }}</span>
+          <li style="margin-left: 26px">{{ item.content }}</li>
+          <template slot="action">
+            <li style="cursor:default">
+              <Icon type="ios-calendar-outline" />
+              {{ $RenderTime(item.createTime) }}
+            </li>
+            <li v-if="item.replyComments.length > 0" class="action-button">
+              <span @click="unfold(item._id)"
+                ><Icon
+                  :type="
+                    unfold_id == item._id
+                      ? 'md-arrow-dropup'
+                      : 'md-arrow-dropdown'
+                  "
+                />{{
+                  unfold_id == item._id
+                    ? "隐藏"
+                    : "显示" + item.replyComments.length + "条"
+                }}回复</span
+              >
+            </li>
+            <li class="action-button">
+              <span @click="showCommentInput(item)"
+                ><Icon type="ios-chatbubbles-outline" /> 回复</span
+              >
+            </li>
+          </template>
+        </ListItem>
+
+        <div
+          v-if="item.replyComments && item._id == unfold_id"
+          style="margin: 0 0 0 30px"
+        >
+          <CommentComp
+            :root="false"
+            :comments="item.replyComments"
+            @showCommentInput="showCommentInput"
+          ></CommentComp>
+        </div>
+        <Divider v-if="root" />
+      </ListItem>
+    </List>
   </div>
 </template>
 
 <script>
-import CommentReplyComp from "./CommentReplyComp";
-
 export default {
-  components: {
-    CommentReplyComp,
-  },
   name: "CommentComp",
   props: {
-    commentList: {
-      type: Array,
-      default: () => [
-        {
-          index: 0,
-          username: "张三",
-          content: "你们好",
-          createTime: "2020-04-12T06:32:20.613+0000",
-        },
-        {
-          index: 1,
-          parentIndex: 0,
-          username: "李四",
-          content: "你好",
-          createTime: "2020-04-12T06:32:31.699+0000",
-        },
-        {
-          index: 2,
-          username: "王五",
-          content: "猪吗？",
-          createTime: "2020-04-12T06:34:37.146+0000",
-        },
-        {
-          index: 3,
-          parentIndex: 2,
-          username: "赵六",
-          content: "？？",
-          createTime: "2020-04-12T07:03:47.873+0000",
-        },
-      ],
+    root: {
+      type: Boolean,
+      default: true,
     },
-  },
-  computed: {
-    commentTree: function () {//数组转树，方便数据库
-      return Array.isArray(this.commentList)
-        ? this.commentList.reduce((total,current)=>{
-          current.replyComments=[]
-          if(current.parentIndex==null){
-            total.push(current)
-          }else{
-            this.commentList[current.parentIndex].replyComments.push(current)
-          }
-          return total
-        },[])
-        : [];
-    },
+    comments: Array,
   },
   data() {
     return {
@@ -108,6 +79,7 @@ export default {
       inputComment: "",
       //输入框默认内容
       placeholders: "写下你的评论",
+      unfold_id: "",
     };
   },
 
@@ -118,7 +90,7 @@ export default {
     cancel() {
       this.inputComment = "";
       this.placeholders = "写下你的评论";
-      this.parentIndex = null;
+      this.parent_id = null;
     },
     /**
      * 提交评论
@@ -138,7 +110,7 @@ export default {
         } else {
           this.$emit("on-comment", {
             content: this.inputComment,
-            parentIndex: this.parentIndex,
+            parent_id: this.parent_id,
           });
         }
       }
@@ -149,20 +121,29 @@ export default {
      * item: 当前大评论
      * reply: 当前回复的评论
      */
-    showCommentInput(item, reply) {
-      if (reply) {
-        this.placeholders = "@" + reply.username + " ";
+    showCommentInput(reply) {
+      if (this.root == true) {
+        if (reply) {
+          this.placeholders = "@" + reply.username + " ";
+        } else {
+          this.inputComment = "";
+        }
+        this.parent_id = reply._id;
       } else {
-        this.inputComment = "";
+        this.$emit("showCommentInput", reply); //向根组件传递
       }
-      this.parentIndex = reply.index;
+    },
+    unfold(_id) {
+      this.unfold_id = _id == this.unfold_id ? "" : _id;
     },
   },
 };
 </script>
 
-<style scoped lang="less">
-.reply {
-  margin-left: 15px;
+<style lang="scss" scoped>
+.action-button{
+  &:hover{
+    color:black;
+  }
 }
 </style>

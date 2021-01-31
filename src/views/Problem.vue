@@ -53,7 +53,12 @@
             </div>
           </TabPane>
           <TabPane label="评论">
-            <CommentComp @on-comment="comment" :commentList="problemData.comments"/>
+            <div class="tab-inner">
+              <CommentComp
+                @on-comment="comment"
+                :comments="problemData.comments"
+              />
+            </div>
           </TabPane>
           <TabPane label="题解" disabled>题解(待完成)</TabPane>
           <TabPane label="提交记录" name="record">
@@ -323,9 +328,10 @@ export default {
       this.FavoriteProblem({ isFavorite, index: this.problemData.index });
       await this.$favorite(this.problemData.index, isFavorite);
     },
-    comment:async function (data){
-      await this.$comment(this.$route.params.index,data);
-    }
+    comment: async function (data) {
+      await this.$comment(this.$route.params.index, data);
+      this.problemData = await this.$GetProblemData(this.$route.params.index);
+    },
   },
   beforeRouteUpdate: async function (to, from, next) {
     this.spinTab = true;
@@ -388,8 +394,10 @@ export default {
 aside {
   height: 100%;
   min-width: 480px;
+  display:flex;
+  flex-direction: column;
   .tab {
-    height: calc(100% - 52px);
+    flex: 1;
     border: 1px solid rgb(236, 236, 236);
   }
   footer {
@@ -413,6 +421,7 @@ aside {
   background: white;
   height: 100%;
   padding: 20px;
+  overflow-y: auto;
   .title {
     color: black;
   }
