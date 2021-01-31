@@ -418,6 +418,9 @@ aside {
 
 //题目描述信息部分
 .tab-inner {
+  &::after{
+    content:".";
+  }
   background: white;
   height: 100%;
   padding: 20px;

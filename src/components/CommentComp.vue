@@ -1,26 +1,28 @@
 <template>
   <div>
     <div v-if="root">
-      <i-input
-        v-model="inputComment"
-        type="textarea"
-        :autosize="{ minRows: 3, maxRows: 5 }"
-        :placeholder="placeholders"
-      >
-      </i-input>
-      <div style="text-align: right; margin-top: 10px">
-        <Button @click="cancel" style="margin-right: 10px">取消</Button>
-        <Button type="primary" round @click="commitComment">确定</Button>
-      </div>
+      <slot>
+        <i-input
+          v-model="inputComment"
+          type="textarea"
+          :autosize="{ minRows: 3, maxRows: 5 }"
+          :placeholder="placeholders"
+        >
+        </i-input>
+        <div style="text-align: right; margin-top: 10px">
+          <Button @click="cancel" style="margin-right: 10px">取消</Button>
+          <Button type="primary" round @click="commitComment">确定</Button>
+        </div>
+      </slot>
     </div>
     <List item-layout="vertical" size="small" :split="false">
-      <ListItem v-for="item in comments" :key="item._id">
+      <ListItem v-for="item in pageComments" :key="item._id">
         <ListItem>
           <Avatar size="small" :src="item.avatar" icon="ios-person"></Avatar
           >&nbsp;<span style="color: #2d9aff">{{ item.username }}</span>
           <li style="margin-left: 26px">{{ item.content }}</li>
           <template slot="action">
-            <li style="cursor:default">
+            <li style="cursor: default">
               <Icon type="ios-calendar-outline" />
               {{ $RenderTime(item.createTime) }}
             </li>
@@ -60,6 +62,13 @@
         <Divider v-if="root" />
       </ListItem>
     </List>
+    <Page
+      :total="comments ? comments.length : 0"
+      v-if="comments && comments.length > pageSize"
+      :page-size="pageSize"
+      :current.sync="pageIndex"
+      style="textalign: center"
+    />
   </div>
 </template>
 
@@ -71,6 +80,11 @@ export default {
       type: Boolean,
       default: true,
     },
+    pageSize: {
+      type: Number,
+      default: 10,
+      validate: (value) => !isNaN(value) && value > 0,
+    },
     comments: Array,
   },
   data() {
@@ -80,9 +94,16 @@ export default {
       //输入框默认内容
       placeholders: "写下你的评论",
       unfold_id: "",
+      pageIndex: 1,
     };
   },
-
+  computed: {
+    pageComments: function () {
+      const index = this.pageIndex,
+        size = this.pageSize;
+      return this.comments?.slice((index - 1) * size, index * size) || [];
+    },
+  },
   methods: {
     /**
      * 点击取消按钮
@@ -141,9 +162,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.action-button{
-  &:hover{
-    color:black;
+.action-button {
+  &:hover {
+    color: black;
   }
 }
 </style>
