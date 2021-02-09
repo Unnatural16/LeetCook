@@ -1,6 +1,6 @@
 <template>
-  <nav class="wrapper">
-    <div class="inner-wrapper">
+  <div class="wrapper">
+    <div class="inner-wrapper" :style="{maxWidth:$route.meta.fullScreen?'':'1200px'}" >
       <ul class="nav left">
         <li>
           <router-link :to="'/home'"
@@ -9,10 +9,9 @@
         </li>
         <li><router-link :to="'/leetbook'">探索</router-link></li>
         <li><router-link :to="'/problemset/all'"> 题库 </router-link></li>
-        <li><router-link :to="'/circle'"> 讨论 </router-link></li>
-        <li><router-link :to="'/contest'"> 竞赛 </router-link></li>
-        <li><router-link :to="'/interview'"> 企业 </router-link></li>
-        <li>
+        <li class="md"><router-link :to="'/contest'"> 竞赛 </router-link></li>
+        <li class="md"><router-link :to="'/interview'"> 企业 </router-link></li>
+        <li class="md">
           <Dropdown class="shopping-menu">
             <a :style="{ color: 'orange' }">
               <Icon type="md-basket" />
@@ -26,13 +25,13 @@
           </Dropdown>
         </li>
       </ul>
-      <Button type="success" @click="$router.push({ name: 'App' })" ghost>
+      <Button class="lg" type="success" @click="$router.push({ name: 'App' })" ghost>
         <Icon type="md-phone-portrait" />
         下载App</Button
       >
-      <Button type="warning" ghost>Plus会员</Button>
+      <Button class="lg" type="warning" ghost>Plus会员</Button>
       <ul class="nav" right>
-        <li>
+        <li class="lg">
           <Dropdown
             ><a>
               语言
@@ -44,10 +43,11 @@
             </DropdownMenu>
           </Dropdown>
         </li>
-        <li>
+        <li class="lg">
           <Dropdown
             ><a> <Icon type="md-folder-open" />收藏夹</a>
             <DropdownMenu slot="list">
+              <DropdownItem v-if="userMessage.favorite==null||userMessage.favorite.length<=0">暂无内容</DropdownItem>
               <DropdownItem
                 v-for="favoriteProblem in userMessage.favorite"
                 :key="favoriteProblem"
@@ -82,7 +82,7 @@
         </template>
       </ul>
     </div>
-  </nav>
+  </div>
 </template>
 
 <script>
@@ -104,10 +104,11 @@ export default {
 
 <style lang="scss" scoped>
 .wrapper {
-  min-width: 920px;
+  width: 100%;
+  min-width: 300px;
+  z-index:1000;
   .inner-wrapper {
     display: flex;
-    max-width: 1440px;
     margin: 0 auto;
     gap: 20px;
     justify-content: center;
@@ -131,6 +132,17 @@ export default {
     }
   }
   box-shadow: 0 0 5px gray;
+
+  @media screen and (max-width:820px){
+    .lg {
+      display:none;
+    }
+  }
+  @media screen and (max-width:460px){
+    .md {
+      display:none;
+    }
+  }
 }
 .logo {
   transform: translateY(10%);

@@ -1,10 +1,23 @@
 <template>
-  <div id="app">
+  <Layout id="app">
     <TheNavagator />
-    <router-view class="main-router" />
-    <TheFooter class="main-footer" />
+    <Content
+      :style="{
+        maxWidth: $route.meta.fullScreen ? '' : '1200px',
+        width: '100%',
+        overflowX: 'auto',
+      }"
+    >
+      <router-view />
+    </Content>
+    <TheFooter
+      :style="{
+        maxWidth: $route.meta.fullScreen ? '' : '1200px',
+        width: '100%',
+      }"
+    />
     <TheLoginDialog />
-  </div>
+  </Layout>
 </template>
 
 <script>
@@ -40,26 +53,15 @@ body {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  .main-router {
-    flex: 1;
-    // max-width: 1440px;
-    align-self: center;
-  }
-  .main-footer {
-    max-width: 1440px;
-    align-self: center;
-  }
+  min-height: 100%;
+  align-items: center;
 }
 //通用分割线样式
 .hr {
   background: rgba(128, 128, 128, 0.3);
   height: 1px;
   width: 100%;
+  margin: 0 0 10px 0;
 }
 //通用图片广告样式
 .advertisement-img {
@@ -70,6 +72,7 @@ body {
     transform: translateY(-10px);
   }
 }
+//替换PC下的滚动条
 @media screen and (min-width: 768px) {
   ::-webkit-scrollbar {
     /*滚动条整体样式*/

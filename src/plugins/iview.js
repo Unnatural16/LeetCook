@@ -3,4 +3,4 @@ import ViewUI from 'view-design'
 
 Vue.use(ViewUI)
 
-import 'view-design/dist/styles/iview.css'
+// import 'view-design/dist/styles/iview.css'

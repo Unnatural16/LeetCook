@@ -20,13 +20,13 @@
           <div class="leet-book-recommended" ref="leetBookRecommended">
             <a
               class="leet-book"
-              v-for="(book, index) in leetBooksRecommended"
+              v-for="book in leetBooksRecommended"
               :key="book.title"
             >
               <div
                 class="image"
                 :style="{
-                  background: `url(${imgList[index % 8]}) center / cover`,
+                  background: `url(${book.image}) center / cover`,
                 }"
               >
                 <div class="image-shadow">
@@ -66,13 +66,13 @@
         <div class="leet-book-flex">
           <a
             class="leet-book"
-            v-for="(book, index) in filterLeetBooks"
+            v-for="book in filterLeetBooks"
             :key="book.title"
           >
             <div
               class="image"
               :style="{
-                background: `url(${imgList[index % 8]}) center / cover`,
+                background: `url(${book.image}) center / cover`,
               }"
             >
               <div class="image-shadow">
@@ -101,16 +101,6 @@ export default {
       leetBooksRecommended: [],
       tabSelected: "",
       showArrowButton: false,
-      imgList: [
-        "https://assets.leetcode-cn.com/aliyun-lc-upload/leetbook/cover/200731021736/Questions-Easy.jpeg",
-        "https://assets.leetcode-cn.com/aliyun-lc-upload/leetbook/cover/200731021320/queue-stack.jpeg",
-        "https://assets.leetcode-cn.com/aliyun-lc-upload/leetbook/cover/200731021402/arraystring.jpeg",
-        "https://assets.leetcode-cn.com/aliyun-lc-upload/leetbook/cover/200731021727/Top_Interview_Questions.jpeg",
-        "https://assets.leetcode-cn.com/aliyun-lc-upload/leetbook/cover/200731021702/Data_Structure_Binary_Tree.jpeg",
-        "https://assets.leetcode-cn.com/aliyun-lc-upload/leetbook/cover/200731021433/linked-list.jpeg",
-        "https://assets.leetcode-cn.com/aliyun-lc-upload/leetbook/cover/200731021742/Question-Medium.jpeg",
-        "https://assets.leetcode-cn.com/aliyun-lc-upload/leetbook/cover/200731021509/hash-table.jpeg",
-      ],
     };
   },
   methods: {
@@ -124,8 +114,8 @@ export default {
       if (this.tabSelected == "全部") {
         return this.leetBooks;
       } else {
-        return this.leetBooks.filter(
-          (item) => item.tags.indexOf(this.tabSelected) > -1
+        return this.leetBooks.filter((item) =>
+          item.tag.includes(this.tabSelected)
         );
       }
     },
@@ -142,7 +132,13 @@ export default {
   width: 100%;
 }
 .leet-book-header {
-  background: rgb(236, 242, 243);
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgb(236, 242, 243) 20%,
+    rgb(236, 242, 243) 80%,
+    transparent
+  );
   height: 400px;
 }
 .inner {

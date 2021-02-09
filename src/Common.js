@@ -1,17 +1,11 @@
 const axios = require('axios')
-const host = 'http://localhost:8080'
+const host = process.env.NODE_ENV == 'development' ? 'http://localhost:8080' : 'http://leetcook.limshung.site'
 //此文件定义了全局变量、方法和api,同时模拟后台发送的数据
 //以后将会实现与后台联动
 exports.install = function (Vue) {
     //问题系列apu
-    Vue.prototype.$GetProblemsTag = async function () {
-        return problems_tag
-    };
     Vue.prototype.$GetProblems = async function () {
         return (await axios.get(host + '/api/problems')).data;
-    }
-    Vue.prototype.$GetProblemsTagNumber = async function () {
-        return problems_tag_number
     }
     Vue.prototype.$GetLeetBooks = async function () {
         return leet_books
@@ -39,8 +33,10 @@ exports.install = function (Vue) {
             await axios.post(host + '/api/login', { username, password })
             this.$store.commit('Login', username);
             this.$store.commit('MutateUserMessage', await this.$GetUserMessage())
+            return true
         } catch (e) {
             this.$store.commit('Login', '');
+            return false
         }
     }
     Vue.prototype.$Register = async function (username, password) {
@@ -70,7 +66,6 @@ exports.install = function (Vue) {
     Vue.prototype.$comment = async function (index, data) {
         return (await axios.post(host + '/api/comment/' + index, data)).data
     }
-
 
     //编辑问题系列api
     Vue.prototype.$PostProblem = async function (data) {
@@ -116,76 +111,65 @@ exports.install = function (Vue) {
             return date.toLocaleDateString();
         }
     }
+    Vue.prototype.$SummitSolution = async function (index, data) { //发送题目序号和时间花费,返回值是超越了多少百分比的人
+        return (await axios.post(host + '/api/summitSolution/' + index, data)).data
+    }
+    Vue.prototype.$WatchSolution = (function () {//闭包防抖，合并阅读量增加请求，减少网络开销
+        let timer;
+        let map = Object.create(null);
+        return function (index, _id) {
+            if (timer) {
+                clearTimeout(timer)
+            }
+            map[_id] = (map[_id] || 0) + 1
+            timer = setTimeout(async () => {
+                await axios.post(host + '/api/watchSolution/' + index, { _id: map })
+                map = Object.create(null)
+            }, 1000)
+        }
+    })()
+    Vue.prototype.$Avatar = 'https://i.loli.net/2021/02/01/cd5lUVsiO623DZ9.png'
 };
-const problems_tag = ['栈', '堆', '贪心算法'
-    , '位运算'
-    , '树'
-    , '深度优先搜索'
-    , '广度优先搜索'
-    , '并查集'
-    , '图'
-    , '设计'
-    , '拓扑排序'
-    , '字典树'
-    , '树状数组'
-    , '线段树'
-    , '二叉搜索树'
-    , '递归'
-    , '脑筋急转弯'
-    , '记忆化'
-    , '队列'
-    , '极小化极大'
-    , '蓄水池抽样'
-    , '几何'
-    , 'Map'
-    , '数组'
-    , '哈希表'
-    , '链表'
-    , '数学'
-    , '双指针'
-    , '字符串'
-    , '二分查找'
-    , '分治算法'
-    , '动态规划'
-    , '回溯算法'
-    , 'Random'
-    , 'Rejection Sampling'
-    , 'Sliding Window'
-    , 'Ordered Map'
-    , ' Line Sweep']
-//TODO: 此处使用了中文作键，在以后需要修改
-const problems_tag_number = {
-    数组: 322,
-    动态规划: 246,
-    字符串: 225,
-    数字: 210,
-    树: 175
+function getRandom(array) {
+    return array[Math.floor(Math.random() * array.length)]
 }
-
-
-
 //LeetBook电子书模型
 class LeetBook {
-    constructor(title, author, chapter, section, tags, read, price, image) {
-        this.title = title;
-        this.author = author;
-        this.chapter = chapter;
-        this.section = section;
-        this.tags = tags;
-        this.read = read;
-        this.price = price;
-        this.image = image;
+    constructor(data) {
+        Object.assign(this, data)
     }
 }
 let leet_books = []
+
+const leetBookTitle = ['计算机网络', '数据结构与算法', '数据库', '队列与栈', '深度学习', '高级数据结构', '图论']
+const leetBookAuthor = '刘一 陈二 张三 李四 王五 赵六 孙七 周八 吴九 郑十'.split(' ')
+const leetBookTag = ["面试", "数据结构", "算法", "会员专区"]
+const leetBookImage = `http://image.limshung.site/pics/hash-table.jpeg
+http://image.limshung.site/pics/Question-Medium.jpeg
+http://image.limshung.site/pics/linked-list.jpeg
+http://image.limshung.site/pics/Data_Structure_Binary_Tree.jpeg
+http://image.limshung.site/pics/Top_Interview_Questions.jpeg
+http://image.limshung.site/pics/arraystring.jpeg
+http://image.limshung.site/pics/queue-stack.jpeg
+http://image.limshung.site/pics/Questions-Easy.jpeg`.split('\n')
 //模拟书目
+const map = Object.create(null)
 for (let i = 0; i < 40; i++) {
-    leet_books.push(new LeetBook("书目" + i,
-        "作者" +
-        "abcdefghijklmn"[Math.floor(Math.random() * 12)],
-        Math.round(Math.random() * 20) + 1,
-        Math.round(Math.random() * 100) + 1,
-        ["面试", "数据结构", "算法", "会员专区"][i % 4],
-        Math.round(Math.random() * 20000),
-        Math.round(Math.random() * 100 - 75) / 10))
+    let title = getRandom(leetBookTitle);
+    if (map[title]) {
+        map[title]++
+        title += `(${map[title]})`
+    } else {
+        map[title] = 1
+    }
+    leet_books.push(new LeetBook({
+        title: title,
+        author: getRandom(leetBookAuthor),
+        chapter: Math.floor(Math.random() * 20) + 1,
+        section: Math.floor(Math.random() * 100) + 1,
+        tag: getRandom(leetBookTag),
+        read: Math.floor(Math.random() * 20000),
+        price: Math.floor((Math.random() * 100 - 75) / 10),
+        image: getRandom(leetBookImage)
+    }))
 }

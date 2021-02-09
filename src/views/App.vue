@@ -8,7 +8,7 @@
           <div>力厨 Leetcook</div>
           <div>全球厨师挚爱的算法做题平台</div>
           <img
-            src="https://i.loli.net/2020/11/19/C8dZoKh5nUeAEwV.png"
+            src="http://image.limshung.site/pics/20210205023226.png"
             alt="QRcode"
           />
         </div>
@@ -26,11 +26,12 @@ export default {
 <style lang="scss" scoped>
 .app-wrapper {
   width: 100%;
+  height: 100%;
   display: flex;
   background: rgb(241, 241, 241);
 }
 .img-aside {
-  background: url(https://static.leetcode-cn.com/cn-mono-assets/production/main/assets/bg-1.3b3956af.svg)
+  background: url(http://image.limshung.site/pics/bg-1.3b3956af.svg)
     center top / 100% repeat-y;
   height: 100%;
   width: 340px;
@@ -54,7 +55,7 @@ export default {
       margin-right: 45px;
       box-shadow: 0 4px 40px rgb(211, 211, 211);
       border-radius: 40px;
-      background: url(https://static.leetcode-cn.com/cn-mono-assets/production/main/assets/phone-1@3x.2eab0d33.png)
+      background: url(http://image.limshung.site/pics/phone-1@3x.2eab0d33.png)
         center center / cover no-repeat;
     }
     .content {

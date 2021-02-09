@@ -1,48 +1,54 @@
 <template>
-  <main class="home">
-    <article>请先登录</article>
-    <aside>
+  <Row
+    :style="{ margin: '0 10px', minWidth: '650px' }"
+    :gutter="16"
+    class="home"
+  >
+    <i-col :lg="18" :md="24" :sm="24" :xs="24">
+      <div class="card main-content">讨论，热帖与话题</div>
+    </i-col>
+    <i-col :lg="6" class="aside" :md="0" :sm="0" :xs="0">
       <img
-        src="https://i.loli.net/2020/11/16/jTJnx6VwdbySA3H.jpg"
+        src="http://image.limshung.site/pics/av1.png"
         class="advertisement-img"
         alt="广告"
       />
       <img
-        src="https://i.loli.net/2020/11/16/K3DJVGakL25gwQW.png"
+        src="http://image.limshung.site/pics/av2.jpg"
         class="advertisement-img"
         alt="广告"
       />
-      <div class="home-card">
+      <div class="home-card card">
         <span class="title">力厨 LeetCode 竞赛</span>
         <span class="inner">参与竞赛，便有机会赢取奖品</span>
         <Button> 报名参赛</Button>
         <img
           alt="力扣 LeetCode 竞赛"
-          src="https://static.leetcode-cn.com/cn-mono-assets/production/main/assets/LeetCode_Cup.2c93ecec.png"
+          src="http://image.limshung.site/pics/LeetCode_Cup.2c93ecec.png"
         />
       </div>
       <div class="hr" />
-      <div class="home-card">
+      <div class="home-card card">
         <span class="title">力厨圈子</span>
         <span class="inner">极客云集、技术讨论、分享经验的交流圈</span>
         <Button> 打开圈子</Button>
         <img
           alt="力扣 LeetCode 竞赛"
-          src="https://static.leetcode-cn.com/cn-mono-assets/production/main/assets/circle.c3e8e192.svg"
+          src="http://image.limshung.site/pics/circle.c3e8e192.svg"
         />
       </div>
       <div class="hr" />
-      <div class="home-card">
+      <div class="home-card card">
         <span class="title">使用力厨积分</span>
         <span class="inner">在力厨商店使用你的力扣积分</span>
         <Button> 前往兑换</Button>
         <img
           alt="力扣 LeetCode 竞赛"
-          src="https://static.leetcode-cn.com/cn-mono-assets/production/main/assets/LeetCoin.afe16c16.png"
+          src="http://image.limshung.site/pics/LeetCoin.afe16c16.png"
         />
       </div>
       <div class="hr" />
-      <ul class="problem-type">
+      <ul class="problem-type card">
         <li>
           <Icon type="md-shuffle" /><router-link :to="'problemset/all'"
             >随机开始</router-link
@@ -54,13 +60,12 @@
           }}</router-link>
         </li>
       </ul>
-    </aside>
-  </main>
+    </i-col>
+  </Row>
 </template>
 
 <script>
-// @ is an alias to /src
-import { mapState, mapMutations } from "vuex";
+import { mapMutations } from "vuex";
 export default {
   name: "Home",
   data: function () {
@@ -78,47 +83,29 @@ export default {
   methods: {
     ...mapMutations(["ShowLoginDialog"]),
   },
-  computed: {
-    ...mapState(["username"]),
-  },
-  beforeRouteEnter: function (to, from, next) {
-    next((vm) => {
-      if (vm.username.length == 0) {
-        vm.ShowLoginDialog(true);
-      }
-    });
-  },
 };
 </script>
 
 <style lang="scss" scoped>
-main {
-  display: flex;
-  justify-content: center;
-  article {
-    width: 666px;
-  }
-  aside {
-    width: 331px;
-    padding: 20px;
-  }
+.home {
+  padding: 20px;
 }
-
-article {
-  //登录内容还没做，临时做一个css
-  background: rgb(238, 238, 238);
-  text-align: center;
-  font-weight: bold;
-  font-size: 72px;
-  margin: 10px;
-  height: 900px;
-  line-height: 900px;
+.card {
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgb(139, 136, 136);
+}
+.main-content {
+  padding: 50px;
+  font-size: 54px;
 }
 .home-card {
   position: relative;
   height: 150px;
   padding: 10px;
   overflow: hidden;
+  background: rgb(241, 241, 241);
+  margin: 10px 0;
+
   .inner {
     display: block;
     width: 60%;

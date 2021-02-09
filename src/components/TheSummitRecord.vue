@@ -8,7 +8,7 @@
         >的用户
       </div>
       <div>炫耀一下:</div>
-      <Button long type="success">写题解，分享你的解题思路</Button>
+      <Button long type="success" @click="$emit('writeSolution')">写题解，分享你的解题思路</Button>
     </div>
     <div class="header" v-else-if="currentResult.type == 'error'">
       <div>执行结果: <Tag color="error">错误</Tag></div>

@@ -1,6 +1,14 @@
 <template>
   <Split class="problem-wrapper" v-model="splitModel" min="480">
     <template v-slot:left>
+      <iframe
+        sandbox="allow-scripts"
+        id="resultFrame"
+        ref="testCode"
+        src="/static/testCode.html"
+        title="testCode"
+        :style="{ display: 'none' }"
+      ></iframe>
       <aside>
         <Tabs type="card" :animated="false" class="tab" v-model="mainTab">
           <TabPane label="题目描述" name="description" class="description">
@@ -52,7 +60,12 @@
               <div>力厨(LeetCook)版权没有</div>
             </div>
           </TabPane>
-          <TabPane label="评论">
+          <TabPane
+            name="comments"
+            :label="`评论(${String(
+              problemData.comments ? problemData.comments.length : 0
+            )})`"
+          >
             <div class="tab-inner">
               <CommentComp
                 @on-comment="comment"
@@ -60,12 +73,76 @@
               />
             </div>
           </TabPane>
-          <TabPane label="题解" disabled>题解(待完成)</TabPane>
+          <TabPane
+            :label="`题解(${String(
+              problemData.solutions ? problemData.solutions.length : 0
+            )})`"
+            name="solutions"
+          >
+            <div class="tab-inner">
+              <Button long type="success" @click="writeSolution({})"
+                >写题解，分享你的解题思路</Button
+              >
+              <List item-layout="vertical" class="solution-list">
+                <ListItem
+                  v-for="solution in solutionPages"
+                  :key="solution.title"
+                  style="cursor: pointer"
+                  @click.native="showSolution(solution)"
+                >
+                  <ListItemMeta
+                    :avatar="$Avatar"
+                    :description="solution.description"
+                  >
+                    <template v-slot:title>
+                      <div>
+                        {{ solution.title }}
+                        <span
+                          :style="{
+                            display: 'block',
+                            color: 'gray',
+                            position: 'absolute',
+                          }"
+                          >{{ solution.username }}</span
+                        >
+                      </div>
+                    </template>
+                  </ListItemMeta>
+                  <div class="solution-content">
+                    {{ solution.content }}
+                  </div>
+                  <template v-slot:action>
+                    <li><Icon type="md-eye" />{{ solution.watched }}</li>
+                    <li>
+                      <Icon type="md-calendar" />{{
+                        $RenderTime(solution.createTime)
+                      }}
+                    </li>
+                  </template>
+                </ListItem>
+                <template v-slot:footer>
+                  <Page
+                    style="text-align: center"
+                    :total="
+                      problemData.solutions ? problemData.solutions.length : 0
+                    "
+                    v-if="
+                      problemData.solutions && problemData.solutions.length > 10
+                    "
+                    :current.sync="solutionIndex"
+                  />
+                </template>
+              </List>
+            </div>
+          </TabPane>
           <TabPane label="提交记录" name="record">
             <TheSummitRecord
               :current-result="summitResult"
               :SummitRecordData="summitRecordData"
               :Percentage="percentage"
+              @writeSolution="
+                writeSolution({ content: '```javascript\n' + code + '\n```' })
+              "
             />
           </TabPane>
         </Tabs>
@@ -89,13 +166,17 @@
           >
           <Button
             @click="
-              $router.push({ params: { index: $route.params.index - 1 } })
+              $router.push({
+                params: { index: Number($route.params.index) - 1 },
+              })
             "
             ><Icon type="md-arrow-dropleft" />上一题</Button
           >
           <Button
             @click="
-              $router.push({ params: { index: $route.params.index + 1 } })
+              $router.push({
+                params: { index: Number($route.params.index) + 1 },
+              })
             "
             >下一题<Icon type="md-arrow-dropright"
           /></Button>
@@ -103,7 +184,14 @@
       </aside>
     </template>
     <template v-slot:right>
-      <div class="right-wrapper">
+      <TheSolutionComp
+        v-if="showSolutionComp"
+        @close="showSolutionComp = false"
+        @summit="summitSolution"
+        v-bind="solutionData"
+        :isEditor="isSolutionEditor"
+      />
+      <div class="right-wrapper" v-else>
         <nav class="coder-control">
           <Select size="small" v-model="lang" class="lang-select">
             <Option key="javascript" value="Javascript">Javascript</Option>
@@ -126,9 +214,8 @@
         <div class="main-coder">
           <editor
             v-model="code"
-            @init="editorInit"
             lang="javascript"
-            theme="github"
+            theme="chrome"
             :options="codeOptions"
           ></editor>
         </div>
@@ -171,14 +258,6 @@
             </div>
           </TabPane>
           <template v-slot:extra>
-            <iframe
-              sandbox="allow-scripts"
-              id="resultFrame"
-              ref="testCode"
-              src="/static/testCode.html"
-              title="testCode"
-              :style="{ display: 'none' }"
-            ></iframe>
             <Button @click="test">测试</Button>
             <Button type="success" @click="summit">提交</Button>
           </template>
@@ -192,6 +271,12 @@
 import TheSummitRecord from "../components/TheSummitRecord";
 import { mapState, mapMutations } from "vuex";
 import CommentComp from "../components/CommentComp";
+import TheSolutionComp from "../components/TheSolutionComp";
+import vue2AceEditor from "vue2-ace-editor";
+import "brace/ext/language_tools"; //language extension prerequsite...
+import "brace/mode/javascript"; //language
+import "brace/snippets/javascript"; //snippet
+import "brace/theme/chrome";
 
 export default {
   name: "Problem",
@@ -200,7 +285,7 @@ export default {
       problemData: {}, //题目数据
       splitModel: "480px",
       code: "", //用户代码
-      mainTab: "description",
+      // mainTab: "description",
       lang: "Javascript",
       testSample: "", //测试集
       testResult: "", //测试结果
@@ -221,15 +306,43 @@ export default {
 
       spinTab: true,
       testSpin: false,
+      solutionIndex: 1,
+      showSolutionComp: false,
+      isSolutionEditor: false,
+      solutionData: {
+        content: "",
+        title: "",
+        username: "",
+        createTime: 0,
+        likedUser: [],
+        watched: 0,
+        _id: "",
+      },
     };
   },
   components: {
-    editor: require("vue2-ace-editor"),
+    editor: vue2AceEditor,
     TheSummitRecord,
     CommentComp,
+    TheSolutionComp,
   },
   computed: {
     ...mapState(["userMessage", "username"]),
+    mainTab: {
+      get: function () {
+        return this.$route.params.tab || "description";
+      },
+      set: (function () {
+        let set = new Set(["comments", "solutions", "record"]);
+        return function (val) {
+          if (set.has(val)) {
+            this.$router.push({ params: { tab: val } });
+          } else {
+            this.$router.push({ params: { tab: null } });
+          }
+        };
+      })(),
+    },
     tips: function () {
       return this.problemData.tips?.split("\n") ?? [];
     },
@@ -247,15 +360,18 @@ export default {
     favorited: function () {
       return this.userMessage.favorite?.includes(this.problemData.index);
     },
+    solutionPages: function () {
+      const solutions = this.problemData?.solutions;
+      return Array.isArray(solutions)
+        ? solutions.slice(
+            (this.solutionIndex - 1) * 10,
+            this.solutionIndex * 10
+          )
+        : [];
+    },
   },
   methods: {
     ...mapMutations(["LikeProblem", "FavoriteProblem"]),
-    editorInit: function () {
-      require("brace/ext/language_tools"); //language extension prerequsite...
-      require("brace/mode/javascript"); //language
-      require("brace/snippets/javascript"); //snippet
-      require("brace/theme/github");
-    },
     //测试示例
     test: function () {
       this.testSpin = true;
@@ -318,13 +434,19 @@ export default {
       });
     },
     like: async function (isLike) {
-      if (this.username == null) return;
+      if (this.username == "") {
+        this.$Message.warning("请先登录");
+        return;
+      }
       this.problemData.liked += isLike ? 1 : -1;
       this.LikeProblem({ isLike, index: this.problemData.index });
       await this.$like(this.problemData.index, isLike);
     },
     favorite: async function (isFavorite) {
-      if (this.username == null) return;
+      if (this.username == "") {
+        this.$Message.warning("请先登录");
+        return;
+      }
       this.FavoriteProblem({ isFavorite, index: this.problemData.index });
       await this.$favorite(this.problemData.index, isFavorite);
     },
@@ -332,21 +454,56 @@ export default {
       await this.$comment(this.$route.params.index, data);
       this.problemData = await this.$GetProblemData(this.$route.params.index);
     },
+    summitSolution: async function () {
+      this.showSolutionComp = false;
+      this.problemData = await this.$GetProblemData(this.$route.params.index);
+    },
+
+    showSolution: function (data) {
+      this.$router.push({ query: { solution_id: data._id } });
+      this.isSolutionEditor = false;
+      this.solutionData = data;
+      this.showSolutionComp = true;
+    },
+    writeSolution: function (data) {
+      this.isSolutionEditor = true;
+      this.solutionData = data;
+      this.showSolutionComp = true;
+    },
   },
   beforeRouteUpdate: async function (to, from, next) {
+    const index = to.params.index;
+    if (index == from.params.index) {
+      next();
+      return;
+    }
     this.spinTab = true;
-    const data = await this.$GetProblemData(to.params.index);
+    const data = await this.$GetProblemData(index);
     if (data) {
       this.problemData = data;
       this.code = this.problemData.template;
       this.testSample = this.problemData.testSample;
-      this.summitRecordData = await this.$GetSummitRecord(to.params.index);
+      this.summitRecordData = await this.$GetSummitRecord(index);
+      document.title = data.index + "、" + data.name;
       next();
     }
     this.spinTab = false;
   },
   created: async function () {
     this.problemData = await this.$GetProblemData(this.$route.params.index);
+    if (!this.problemData) {
+      this.$router.replace({ params: { index: 0 } });
+      return;
+    }
+    document.title = this.problemData.index + "、" + this.problemData.name;
+    const solution_id = this.$route.query.solution_id;
+    if (solution_id) {
+      this.showSolution(
+        this.problemData.solutions.find(
+          (solution) => solution._id == solution_id
+        )
+      );
+    }
     this.summitRecordData = await this.$GetSummitRecord(
       this.$route.params.index
     );
@@ -394,7 +551,7 @@ export default {
 aside {
   height: 100%;
   min-width: 480px;
-  display:flex;
+  display: flex;
   flex-direction: column;
   .tab {
     flex: 1;
@@ -418,12 +575,9 @@ aside {
 
 //题目描述信息部分
 .tab-inner {
-  &::after{
-    content:".";
-  }
   background: white;
-  height: 100%;
-  padding: 20px;
+  height: calc(100% - 32px) !important;
+  padding: 10px 20px;
   overflow-y: auto;
   .title {
     color: black;
@@ -508,6 +662,15 @@ aside {
     padding: 5px;
     width: calc(100% - 100px);
     word-break: break-all;
+  }
+}
+
+//题解列表部分
+.solution-list {
+  .solution-content {
+    color: gray;
+    max-height: 42px;
+    overflow: hidden;
   }
 }
 </style>

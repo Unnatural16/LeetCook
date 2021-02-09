@@ -37,15 +37,9 @@ const routes = [
     component: () => import('../views/LeetBook.vue'),
   },
   {
-    path: '/circle',
-    name: 'Circle',
-    meta: { name: '讨论' },
-    component: () => import('../views/Circle.vue'),
-  },
-  {
     path: '/contest',
     name: 'Contest',
-    meta: { name: '竞赛' },
+    meta: { name: '竞赛' ,fullScreen: true},
     component: () => import('../views/Contest.vue'),
   },
   {
@@ -57,19 +51,19 @@ const routes = [
   {
     path: '/app',
     name: 'App',
-    meta: { name: '应用' },
+    meta: { name: '应用' ,fullScreen: true},
     component: () => import('../views/App.vue')
   },
   {
-    path: '/problem/:index',
+    path: '/problem/:index/:tab?',
     name: 'Problem',
-    meta: { name: '题目' },
-    component: () => import('../views/Problem.vue')
+    meta: { name: '题目',fullScreen: true },
+    component: () => import('../views/Problem.vue'),
   },
   {
     path: '/newProblem',
     name: 'NewProblem',
-    meta: { name: '提交问题' },
+    meta: { name: '提交问题' ,fullScreen: true},
     component: () => import('../views/NewProblem.vue'),
     beforeEnter: function (to, from, next) {
       if (store.state.userMessage.admin) {
@@ -103,6 +97,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  document.title='LeetCook-'+to.meta.name;
   if (firstOpen&&to.name!='App'&&navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)) {
     next('/app');
     firstOpen=false;

@@ -22,7 +22,9 @@
       >
     </div>
     <div class="content">
-      <img src="https://static.leetcode-cn.com/cn-mono-assets/production/main/assets/null_light.53585615.png">
+      <img
+        src="http://image.limshung.site/pics/null_light.53585615.png"
+      />
     </div>
   </div>
 </template>
@@ -40,11 +42,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.wrapper{
-    width: 100%;
+.wrapper {
+  width: 100%;
+  height: 100%;
+  min-width: 460px;
+  display: flex;
+  flex-direction: column;
 }
 .interview-wrapper {
-  width: 780px;
+  max-width: 780px;
   margin: 0 auto;
 }
 .title {
@@ -63,14 +69,20 @@ export default {
     background: rgba(128, 128, 128, 0.089);
   }
 }
-.content{
-  background:rgb(238, 238, 238);
-  height: calc(100% - 167px);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  img{
-    width:200px;
+.content {
+  background: linear-gradient(
+    to right,
+    transparent,
+    #eeeeee 20%,
+    #eeeeee 80%,
+    transparent
+  );
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img {
+    width: 200px;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <Modal v-model="isOpen" :width="480" class="login-wrapper">
     <h1>
-      {{ ["欢迎来到力厨", "账号密码登录", "邮箱注册"][loginDialogState] }}
+      {{ ["欢迎来到力厨", "账号密码登录", "注册"][loginDialogState] }}
     </h1>
     <Form v-if="loginDialogState == 0">
       <FormItem>
@@ -29,15 +29,10 @@
 
       <div class="small-button">
         <a @click="loginDialogState = 1">账号密码登录</a>
-        <a @click="loginDialogState = 2">邮箱注册</a>
+        <a @click="loginDialogState = 2">注册</a>
       </div>
     </Form>
-    <Form
-      v-if="loginDialogState == 1"
-      :model="formLogin"
-      :rules="ruleAccount"
-      ref="login"
-    >
+    <Form v-if="loginDialogState == 1" :model="formLogin" ref="login">
       <FormItem prop="username">
         <i-input
           placeholder="请输入用户名"
@@ -62,17 +57,12 @@
         <a @click="$Message.error('尚未完成QAQ')">忘记密码</a>
       </div>
     </Form>
-    <Form
-      v-if="loginDialogState == 2"
-      :model="formRegister"
-      :rules="ruleAccount"
-      ref="register"
-    >
+    <Form v-if="loginDialogState == 2">
       <FormItem>
         <i-input placeholder="输入邮箱(暂时不需要)"></i-input>
       </FormItem>
 
-      <FormItem prop="password">
+      <FormItem>
         <i-input
           type="password"
           placeholder="输入密码"
@@ -80,7 +70,7 @@
           @keyup.enter.native="handleSubmit('register')"
         ></i-input>
       </FormItem>
-      <FormItem prop="username">
+      <FormItem>
         <i-input
           placeholder="你的用户名"
           v-model="formRegister.username"
@@ -130,28 +120,6 @@ export default {
         password: "",
       },
       number: "",
-      ruleAccount: {
-        username: [
-          {
-            type: "string",
-            min: 3,
-            max: 20,
-            message: "用户名应为3到20个字符之内",
-            trigger: "blur",
-            required: true,
-          },
-        ],
-        password: [
-          {
-            type: "string",
-            min: 3,
-            max: 20,
-            message: "密码应为3到20个字符之内",
-            trigger: "blur",
-            required: true,
-          },
-        ],
-      },
     };
   },
   computed: {
@@ -168,21 +136,17 @@ export default {
   methods: {
     ...mapMutations(["ShowLoginDialog", "Login"]),
     handleSubmit: async function (name) {
-      let flag;
-      this.$refs[name].validate(async (valid) => {
-        flag = valid;
-      });
-      if (!flag) return;
       switch (name) {
         case "login":
           {
-            try {
+            if (
               await this.$Login(
                 this.formLogin.username,
                 this.formLogin.password
-              );
+              )
+            ) {
               this.isOpen = false;
-            } catch (error) {
+            } else {
               this.$Message.error("用户名或密码错误");
             }
           }
@@ -199,7 +163,13 @@ export default {
                 this.isOpen = false;
               }
             } catch (e) {
-              this.$Message.error(e.response);
+              if(e.response.data.error.includes('duplicate')) {
+                this.$Message.error('用户名已注册');
+              }else if(e.response.data.error.includes('不能为空')) {
+                this.$Message.error('用户名和密码必须为由数字、26个英文字母或者下划线组成的字符串');
+              }else{
+                this.$Message.error('其他错误');
+              }
             }
           }
           break;
