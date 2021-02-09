@@ -1,23 +1,12 @@
 <template>
-  <Layout id="app">
+  <div id="app">
     <TheNavagator />
-    <Content
-      :style="{
-        maxWidth: $route.meta.fullScreen ? '' : '1200px',
-        width: '100%',
-        overflowX: 'auto',
-      }"
-    >
-      <router-view />
-    </Content>
-    <TheFooter
-      :style="{
-        maxWidth: $route.meta.fullScreen ? '' : '1200px',
-        width: '100%',
-      }"
-    />
+    <div class="router-layout" >
+      <router-view :style="{maxWidth:$route.meta.fullScreen?'':'1200px',width:'100%',margin:'0 auto'}"/>
+    </div>
+    <TheFooter :style="{maxWidth:$route.meta.fullScreen?'':'1200px',width:'100%'}" />
     <TheLoginDialog />
-  </Layout>
+  </div>
 </template>
 
 <script>
@@ -42,6 +31,24 @@ export default {
 };
 </script>
 
+<style lang="scss" scoped>
+.router-layout{
+  flex: 1;
+  width: 100%;
+  overflow-x:auto;
+}
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  display:flex;
+  overflow-x:hidden;
+  flex-direction: column;
+  align-items: center;
+}
+</style>
+
 <style lang="scss">
 html,
 body {
@@ -49,19 +56,13 @@ body {
   height: 100%;
   overflow-y: overlay;
 }
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  min-height: 100%;
-  align-items: center;
-}
+
 //通用分割线样式
 .hr {
   background: rgba(128, 128, 128, 0.3);
   height: 1px;
   width: 100%;
-  margin: 0 0 10px 0;
+  margin:0 0 10px 0;
 }
 //通用图片广告样式
 .advertisement-img {

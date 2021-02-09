@@ -544,8 +544,8 @@ export default {
 <style lang="scss" scoped>
 //整体布局部分
 .problem-wrapper {
-  display: flex;
   width: 100%;
+  height:100%;
   background: linear-gradient(rgb(236, 236, 236), white);
 }
 aside {

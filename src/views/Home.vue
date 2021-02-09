@@ -1,4 +1,5 @@
 <template>
+<div>
   <Row
     :style="{ margin: '0 10px', minWidth: '650px' }"
     :gutter="16"
@@ -62,6 +63,7 @@
       </ul>
     </i-col>
   </Row>
+  </div>
 </template>
 
 <script>

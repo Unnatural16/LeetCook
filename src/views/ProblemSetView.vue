@@ -1,4 +1,5 @@
 <template>
+<div>
   <Row :style="{ margin: '0 10px', minWidth: '650px' }" :gutter="16">
     <i-col :lg="18" :md="24" :sm="24" :xs="24">
       <h2 class="title">
@@ -112,6 +113,7 @@
       </div>
     </i-col>
   </Row>
+</div>
 </template>
 
 <script>
