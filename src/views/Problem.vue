@@ -41,8 +41,7 @@
                 class="sample"
                 v-for="sample in problemData.samples"
                 :key="sample"
-              >
-                {{ sample }}
+              >{{ sample }}
               </div>
               <h4 v-if="tips.length">提示:</h4>
               <ul style="margin: 0 0 20px 40px">
@@ -420,14 +419,16 @@ export default {
       });
     },
     deleteProblem: async function () {
+      const that=this;
       this.$Modal.confirm({
         title: "警告",
         content: "是否要删除此题目？此操作不可还原",
-        onOk: function () {
+        onOk: async function () {
           try {
-            this.$DeleteProblem(this.problemData.index);
-            this.$router.replace({ name: "ProblemSet" });
+            await that.$DeleteProblem(that.problemData.index);
+            that.$router.replace({ name: "ProblemSet" });
           } catch (e) {
+            console.log(e)
             this.$Message.error(e);
           }
         },

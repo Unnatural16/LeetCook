@@ -40,6 +40,7 @@ export default {
   height: 100%;
   flex: 1;
   display: flex;
+  overflow:auto;
   justify-content: center;
   align-items: center;
   .inner {

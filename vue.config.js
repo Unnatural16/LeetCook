@@ -20,7 +20,7 @@ module.exports = {
               );
         },
             config => {//开发模式
-                externalCDN(config)
+                // externalCDN(config)
                 config.devServer.proxy({
                     '/api': {
                         target: 'http://localhost:7001',
@@ -57,11 +57,6 @@ function externalCDN(config) {
             'https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js',
             // iview.js
             'https://cdn.bootcdn.net/ajax/libs/view-design/4.4.0/iview.min.js',
-            // //brace
-            // 'https://cdn.jsdelivr.net/npm/brace@0.11.1/index.min.js',
-            // 'https://cdn.jsdelivr.net/combine/npm/brace@0.11.1/ext/language_tools.min.js,npm/brace@0.11.1/mode/javascript.min.js,npm/brace@0.11.1/snippets/javascript.min.js,npm/brace@0.11.1/theme/chrome.min.js',
-            // //mavon-editor  
-            // "https://cdn.jsdelivr.net/npm/mavon-editor@2.9.1/dist/mavon-editor.min.js",
         ]
     }
     // 通过 html-webpack-plugin 将 cdn 注入到 index.html 之中

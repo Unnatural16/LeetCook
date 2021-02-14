@@ -172,7 +172,7 @@ export default {
   name: "NewProblem",
   data() {
     return {
-      file:[],
+      file: [],
       formItem: {
         name: "",
         difficulty: "",
@@ -265,13 +265,13 @@ export default {
         func: "",
         args: [],
         template: "",
-        tags:""
+        tags: "",
       };
     },
     handleUpload: function (file) {
       let fileReader = new FileReader();
       fileReader.readAsText(file, "UTF-8");
-      let that=this;
+      let that = this;
       fileReader.onload = function (e) {
         that.file = JSON.parse(e.target.result);
       };
@@ -291,7 +291,11 @@ export default {
           //如果是编辑（有index），则加上
           data.index = this.$route.query.index;
         }
-        data.tags=data.tags.split(",").filter((tag)=>tag.trim().length>0);//将标签解析为数组
+        if (data.tags) {
+          data.tags = data.tags
+            .split(",")
+            .filter((tag) => tag.trim().length > 0); //将标签解析为数组
+        }
         for (let i = 0; i < data.args.length; i++) {
           //将对象数组还原为数组
           data.args[i] = data.args[i].value;
@@ -329,7 +333,7 @@ export default {
     this.formItem.template = data.template;
     this.formItem.samples = data.samples;
     this.formItem.tips = data.tips;
-    this.formItem.tags = data.tags.join(',');
+    this.formItem.tags = data.tags.join(",");
     // this.formItem.testSamples=data.testSamples
     this.formItem.args = data.args.map((arg) => ({ value: arg }));
     for (let testSample of data.testSamples) {

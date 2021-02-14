@@ -16,12 +16,12 @@ let firstOpen=true;
 const routes = [
   {
     path: '/',
-    redirect: { name: 'ProblemSet', params: { type: 'all' } },
+    redirect: { name: 'Home' },
   },
   {
     path: '/home',
     name: 'Home',
-    meta: { name: '主页' },
+    meta: { name: '主页'},
     component: () => import('../views/Home')
   },
   {
