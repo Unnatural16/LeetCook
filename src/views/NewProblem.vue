@@ -324,26 +324,18 @@ export default {
       return;
     }
     let data = await this.$GetProblemData(this.$route.query.index);
-    this.formItem.name = data.name;
-    this.formItem.difficulty = data.difficulty;
-    this.formItem.description = data.description;
-    this.formItem.testSample = data.testSample;
-    this.formItem.funcName = data.funcName;
-    this.formItem.func = data.func;
-    this.formItem.template = data.template;
-    this.formItem.samples = data.samples;
-    this.formItem.tips = data.tips;
-    this.formItem.tags = data.tags.join(",");
-    // this.formItem.testSamples=data.testSamples
-    this.formItem.args = data.args.map((arg) => ({ value: arg }));
-    for (let testSample of data.testSamples) {
+    data.tags =data.tags.join(",");
+    data.args=data.args.map((arg) => ({ value: arg }));
+    const that=this;
+    data.testSamples = data.testSamples.map((testSample)=>{
       let args = [];
       for (let key in testSample) {
         let type = data.args[key];
-        args.push(this.$argsToString[type](testSample[key]));
+        args.push(that.$argsToString[type.value](testSample[key]));
       }
-      this.formItem.testSamples.push({ value: args.join("\n") });
-    }
+      return {value: args.join("\n")}
+    })
+    Object.assign(this.formItem,data)
   },
 };
 </script>
