@@ -26,18 +26,16 @@ export default {
 <style lang="scss" scoped>
 .app-wrapper {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   display: flex;
   background: rgb(241, 241, 241);
 }
 .img-aside {
   background: url(http://image.limshung.site/pics/bg-1.3b3956af.svg)
     center top / 100% repeat-y;
-  height: 100%;
   width: 340px;
 }
 .main-content {
-  height: 100%;
   flex: 1;
   display: flex;
   overflow:auto;
@@ -71,7 +69,7 @@ export default {
     }
   }
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1050px) {
   .img-aside {
     display: none;
   }

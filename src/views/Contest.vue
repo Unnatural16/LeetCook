@@ -86,7 +86,6 @@ export default {
 
 <style lang="scss" scoped>
 .wrapper {
-  height: 100%;
   width: 100%;
   min-width: 900px;
   background: rgb(233, 233, 233);

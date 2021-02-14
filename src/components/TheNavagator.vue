@@ -7,11 +7,11 @@
             ><img src="../assets/logo.jpg" alt="logo" class="logo" />
           </router-link>
         </li>
-        <li><router-link :to="'/leetbook'">探索</router-link></li>
+        <li class="md"><router-link :to="'/leetbook'">探索</router-link></li>
         <li><router-link :to="'/problemset/all'"> 题库 </router-link></li>
         <li class="md"><router-link :to="'/contest'"> 竞赛 </router-link></li>
-        <li class="md"><router-link :to="'/interview'"> 企业 </router-link></li>
-        <li class="md">
+        <li class="lg"><router-link :to="'/interview'"> 企业 </router-link></li>
+        <li class="lg">
           <Dropdown class="shopping-menu">
             <a :style="{ color: 'orange' }">
               <Icon type="md-basket" />
@@ -25,7 +25,7 @@
           </Dropdown>
         </li>
       </ul>
-      <Button class="lg" type="success" @click="$router.push({ name: 'App' })" ghost>
+      <Button type="success" @click="$router.push({ name: 'App' })" ghost>
         <Icon type="md-phone-portrait" />
         下载App</Button
       >
@@ -105,7 +105,7 @@ export default {
 <style lang="scss" scoped>
 .wrapper {
   width: 100%;
-  min-width: 300px;
+  min-width: 360px;
   z-index:1000;
   .inner-wrapper {
     display: flex;
@@ -135,12 +135,12 @@ export default {
 
   @media screen and (max-width:820px){
     .lg {
-      display:none;
+      display:none!important;
     }
   }
   @media screen and (max-width:460px){
     .md {
-      display:none;
+      display:none!important;
     }
   }
 }
