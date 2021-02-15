@@ -21,7 +21,7 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    meta: { name: '主页'},
+    meta: { name: '主页',fullScreen: true},
     component: () => import('../views/Home')
   },
   {

@@ -29,6 +29,14 @@
         </div>
       </i-col>
     </Row>
+    <div class="banner" align="middle" type="flex" justify="center">
+      <div>在线编辑 享受算法</div>
+        <img
+          src="http://image.limshung.site/pics/view.PNG"
+          alt="网站截图"
+          class="screenshot"
+        />
+    </div>
     <Row class="point">
       <i-col :md="8" span="24">
         <div class="card">
@@ -45,7 +53,9 @@
       <i-col :md="8" span="24">
         <div class="card">
           <h3>成长性</h3>
-          <div>LeetCook是一个充满了各种难以名状的bug的网站。你可以将这些问题提交给作者，帮助他成长。</div>
+          <div>
+            LeetCook是一个充满了各种难以名状的bug的网站。你可以将这些问题提交给作者，帮助他成长。
+          </div>
         </div>
       </i-col>
     </Row>
@@ -78,13 +88,40 @@ export default {
     }
   }
 }
+@media screen and (max-width:500px) {
+  .banner{
+    display:none!important;
+  }
+}
+.banner {
+  background: #eeeeee;
+  display:flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap:wrap;
+  padding:40px;
+  div{
+    flex: 1 0;
+    min-width: 200px;
+    font-size:48px;
+    font-weight: bold;
+    color:white;
+    text-shadow: 0 0 5px black;
+  }
+  .screenshot {
+    margin:0 80px;
+    height:393px;
+    max-width: 100%;
+    object-fit: cover;
+  }
+}
 .point {
   text-align: center;
-  margin:50px 0;
+  margin: 50px 0;
   .card {
     font-size: 20px;
     width: 260px;
-    margin:20px auto!important;
+    margin: 20px auto !important;
     h3 {
       color: #42b983;
     }

@@ -529,7 +529,7 @@ export default {
           this.spinTab = false;
         } else {
           this.testSpin = false;
-          this.testResult = e.data.result || "undefined";
+          this.testResult = e.data.result ?? "undefined";
           this.costTime = e.data.cost;
           this.sampleTestResult = e.data.sampleResult;
         }
